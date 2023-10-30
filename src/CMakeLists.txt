@@ -5,14 +5,14 @@ set(exeName "myHttpServer.out")
 
 message(STATUS "CMakeLists.txt of ${exeName} executable")
 
-# add the executable which is of now, composed ONLY from the main.cpp
+# Add the executable which is of now, composed ONLY from the main.cpp
 add_executable(${exeName} main.cpp)
 
-#target_link_libraries(${exeName} PUBLIC sampleObj1Lib)
+target_link_libraries(${exeName} PUBLIC cpp11ThreadWrapperLib)
 
-# add the binary tree to the search path for include files
+# Add the binary tree to the search path for include files
 # so that we will find sampleObj1.h
-#target_include_directories(${exeName} PUBLIC
-#                          "${PROJECT_BINARY_DIR}"
-#                          "${PROJECT_SOURCE_DIR}/sampleObj1Lib"
-#                          )
+target_include_directories(${exeName} PUBLIC
+                          "${PROJECT_BINARY_DIR}"
+                          "${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapperLib/include"
+                          )
