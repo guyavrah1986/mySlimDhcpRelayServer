@@ -18,4 +18,4 @@ add_subdirectory(src)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper)
 
-#add_subdirectory(test)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/tests)
