@@ -14,5 +14,5 @@ target_link_libraries(${exeName} PUBLIC cpp11ThreadWrapperLib)
 # so that we will find sampleObj1.h
 target_include_directories(${exeName} PUBLIC
                           "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapperLib/include"
+                          "${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper/include"
                           )

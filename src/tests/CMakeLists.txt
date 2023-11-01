@@ -5,7 +5,7 @@ message(STATUS "unit tests CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
  
 # Locate GTest
 find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+include_directories(${GTEST_INCLUDE_DIRS} "${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper/include")
  
 # Link runTests with what we want to test and the GTest and pthread library
 find_library(GTEST_LIBRARY gtest HINTS /usr/lib)
@@ -15,4 +15,6 @@ message(STATUS "GTEST_LIBRARIES is: ${GTEST_LIBRARIES}")
 
 set(testsExeName "unitTestsExe.out")
 add_executable(${testsExeName} unitTestsMain.cpp)
-target_link_libraries(${testsExeName} ${GTEST_LIBRARY} pthread)
+#target_include_directories("${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper/include")
+                          
+target_link_libraries(${testsExeName} ${GTEST_LIBRARY} cpp11ThreadWrapperLib pthread)

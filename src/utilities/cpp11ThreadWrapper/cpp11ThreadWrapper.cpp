@@ -1,15 +1,23 @@
-#include <iostream>
-
 #include "include/cpp11ThreadWrapper.h"
-
+	
 using namespace std;
 
-SampleObj1::SampleObj1(int i) : m_i(i)
+cpp11ThreadWrapper::cpp11ThreadWrapper(thread&& t, RAIIAction a)
+	: m_thread(move(t))
+	, m_actionUponDestruction(a)
 {
-	cout << "SampleObj1::SampleObj1 - setting m_i to:" << m_i << endl;
+
 }
 
-SampleObj1::~SampleObj1()
+cpp11ThreadWrapper::~cpp11ThreadWrapper()
 {
-	cout << "SampleObj1::~SampleObj1" << endl;
+	if (m_thread.joinable())
+	{
+		(m_thread.*m_actionUponDestruction)();
+	}
+}
+
+std::thread& cpp11ThreadWrapper::GetThread()
+{
+	return m_thread;
 }
