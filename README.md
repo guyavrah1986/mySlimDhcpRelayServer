@@ -2,6 +2,8 @@
 C++ based multi threaded slim HTTP server
 
 # Initial development environment requierments
+- Install (if needed) and enable SSH on the Linux (Ubuntu) devlopment machine (to be able to log into it from remote machine):
+- https://hostman.com/tutorials/how-to-install-and-configure-ssh-on-ubuntu-22-04/
 - `git` should be installed
 - `cmake` should be installed
 - Currently Ubuntu18.04 is a legitimate Linux distro that can be used as a development environment. 
