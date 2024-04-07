@@ -26,9 +26,10 @@
 
 class cpp11ThreadWrapper
 {
-	typedef void (std::thread::*RAIIAction)();
 public:
-	cpp11ThreadWrapper(std::thread&& t, RAIIAction a);
+	typedef void (std::thread::*RAIIAction)();
+
+	cpp11ThreadWrapper(std::thread&& t, RAIIAction action);
 	~cpp11ThreadWrapper();
 	std::thread& GetThread();
 

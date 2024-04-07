@@ -11,6 +11,6 @@ TEST(cpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletion)
 { 
 	std::cout << "cpp11ThreadWrapperTest::createSingleThreadAndRunTillCompletion" << std::endl;
 	std::thread sampleThread;
-	RAIIAction action;
+	cpp11ThreadWrapper::RAIIAction action;
 	cpp11ThreadWrapper sampleWrappedThread(sampleThread, action);
 }

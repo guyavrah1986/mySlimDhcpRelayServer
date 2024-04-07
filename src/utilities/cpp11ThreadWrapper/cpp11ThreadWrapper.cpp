@@ -2,9 +2,9 @@
 	
 using namespace std;
 
-cpp11ThreadWrapper::cpp11ThreadWrapper(thread&& t, RAIIAction a)
+cpp11ThreadWrapper::cpp11ThreadWrapper(thread&& t, RAIIAction action)
 	: m_thread(move(t))
-	, m_actionUponDestruction(a)
+	, m_actionUponDestruction(action)
 {
 
 }
