@@ -15,6 +15,17 @@ message(STATUS "GTEST_LIBRARIES is: ${GTEST_LIBRARIES}")
 
 set(testsExeName "unitTestsExe.out")
 add_executable(${testsExeName} unitTestsMain.cpp)
-#target_include_directories("${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper/include")
-                          
-target_link_libraries(${testsExeName} ${GTEST_LIBRARY} cpp11ThreadWrapperLib pthread)
+
+# Due to the fact that the tcmalloc is installed into a "non standra" location
+# adding here an "extra" location for the linker to look for libraries. Note
+# that under these additional path(s) the linker ONLY looks for libraries 
+# with names according to the convention, for example:libtcmalloc.so 
+# If there is NOT a single file like so under the below path, the linker will
+# report an error in this case.
+link_directories(/usr/lib/x86_64-linux-gnu)
+
+
+# NOTES:
+# tcmalloc - is linked in order to use tcmalloc in the unit tests instead of glibc malloc - only
+# for the sake of using the heap checker feature of the tcmalloc library.
+target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc cpp11ThreadWrapperLib pthread)
