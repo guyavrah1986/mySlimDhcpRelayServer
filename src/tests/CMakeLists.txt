@@ -22,10 +22,22 @@ add_executable(${testsExeName} unitTestsMain.cpp)
 # with names according to the convention, for example:libtcmalloc.so 
 # If there is NOT a single file like so under the below path, the linker will
 # report an error in this case.
-link_directories(/usr/lib/x86_64-linux-gnu)
+#link_directories(/usr/lib/x86_64-linux-gnu)
 
+
+
+# Add the gperftools include directory for the heap checker that will be 
+# used in the unit tests.
+target_include_directories(${testsExeName} PUBLIC /usr/include/gperftools)
 
 # NOTES:
 # tcmalloc - is linked in order to use tcmalloc in the unit tests instead of glibc malloc - only
 # for the sake of using the heap checker feature of the tcmalloc library.
+# pthread - is linked due to "regular" GTest requierments
 target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc cpp11ThreadWrapperLib pthread)
+
+# For debug
+get_target_property(target_includes ${testsExeName} INTERFACE_INCLUDE_DIRECTORIES)
+foreach(include_dir ${target_includes})
+    message("Include directory: ${include_dir}")
+endforeach()

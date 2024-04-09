@@ -1,4 +1,6 @@
 
+#include <gperftools/heap-checker.h>
+
 class MySampleObject
 {
     public:
@@ -23,6 +25,10 @@ class MySampleObject
 TEST(sampleObjectTest, createSingleMySampleObject)
 { 
 	std::cout << "sampleObjectTest::createSingleMySampleObject" << std::endl;
-	MySampleObject* pTestedObj = new MySampleObject(12, 17);
-    delete pTestedObj;
+    HeapLeakChecker heap_checker("test_foo");
+    {
+	    MySampleObject* pTestedObj = new MySampleObject(12, 17);
+        delete pTestedObj;
+    }
+    if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 }
