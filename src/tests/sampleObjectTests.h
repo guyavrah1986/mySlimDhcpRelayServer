@@ -1,4 +1,3 @@
-
 #include <gperftools/heap-checker.h>
 
 class MySampleObject
