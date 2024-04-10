@@ -1,21 +1,19 @@
 # This is the project's main CMakeLists.txt
 #========================================== 
-
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.22.1)
 
 # Add/customize global project settings:
 project(myHttpServer)
-message(STATUS "main CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
 set(CMAKE_CXX_STANDARD 20)
-message(STATUS "main CMakeLists.txt of ${CMAKE_PROJECT_NAME} - the PROJECT_SOURCE_DIR is set to:${PROJECT_SOURCE_DIR}")
-
-# In case the application is to be built as a 32-bit application, un-comment the below
-#set(CMAKE_CXX_FLAGS "-m32")
+message(STATUS "main CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
+message(STATUS "The root folder of the project is:${PROJECT_SOURCE_DIR}")
 
 include_directories(src)
 
-add_subdirectory(src)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/infra)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dataBaseManager)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/tests)
+
+add_subdirectory(src)

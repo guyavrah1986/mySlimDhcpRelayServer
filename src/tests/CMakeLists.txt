@@ -1,11 +1,11 @@
 # CMakeLists.txt for the unit tests:
 # =================================
-
-message(STATUS "unit tests CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
+message(STATUS "CMakeLists.txt for unit tests of ${CMAKE_PROJECT_NAME}")
  
 # Locate GTest
 find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS} "${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper/include")
+include_directories(${GTEST_INCLUDE_DIRS} 
+    "${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper/include")
  
 # Link runTests with what we want to test and the GTest and pthread library
 find_library(GTEST_LIBRARY gtest HINTS /usr/lib)
@@ -24,8 +24,6 @@ add_executable(${testsExeName} unitTestsMain.cpp)
 # report an error in this case.
 #link_directories(/usr/lib/x86_64-linux-gnu)
 
-
-
 # Add the gperftools include directory for the heap checker that will be 
 # used in the unit tests.
 target_include_directories(${testsExeName} PUBLIC /usr/include/gperftools)
@@ -33,8 +31,8 @@ target_include_directories(${testsExeName} PUBLIC /usr/include/gperftools)
 # NOTES:
 # tcmalloc - is linked in order to use tcmalloc in the unit tests instead of glibc malloc - only
 # for the sake of using the heap checker feature of the tcmalloc library.
-# pthread - is linked due to "regular" GTest requierments
-target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc cpp11ThreadWrapperLib pthread)
+# All other libraries are project's propriatry libraires that are to be tested.
+target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc infraLib dataBaseManagerLib)
 
 # For debug
 get_target_property(target_includes ${testsExeName} INTERFACE_INCLUDE_DIRECTORIES)

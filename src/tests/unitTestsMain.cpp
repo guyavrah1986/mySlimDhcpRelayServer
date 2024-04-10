@@ -5,6 +5,7 @@
 // Each header file listed here contains GTest unit tests for some objects
 #include "cpp11ThreadWrapperTest.h"
 #include "sampleObjectTests.h"
+#include "dataBaseManagerTest.h"
 
 using namespace std;
 

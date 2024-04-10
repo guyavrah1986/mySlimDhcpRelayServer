@@ -1,7 +1,7 @@
 #include <thread> 						// applicble since C++11
 #include <gperftools/heap-checker.h> 	// for tcmalloc heap checking
 
-#include "../utilities/cpp11ThreadWrapper/include/cpp11ThreadWrapper.h"
+#include "../infra/include/cpp11ThreadWrapper.h"
 
 TEST(cpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletion)
 { 
