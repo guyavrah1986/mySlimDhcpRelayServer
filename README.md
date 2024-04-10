@@ -27,3 +27,12 @@ C++ based multi threaded slim HTTP server
 - To run ALL the unit tests: `build$ src/tests/unitTestsExe.out`
 - Run a specific unit test: `build$ src/tests/unitTestsExe.out --gtest_filter=sampleObjectTest.createSingleMySampleObject`
 - Run unit test with tcmalloc's heap leak detection enabled: `build$ env HEAPCHECK=local src/tests/unitTestsExe.out --gtest_filter=sampleObjectTest.createSingleMySampleObject`
+- Generating unit test covrage: 
+-- Install `lcov`: `sudo apt-get update install lcov` (version used: 1.14)
+-- Run the unit tests (as described above)
+-- Under the `myHttpServer/build/src/tests/CMakeFiles/unitTestsExe.out.dir/` the `unitTestsMain.cpp.gcda` and `unitTestsMain.cpp.gcno` 
+will be present
+-- cd to the `myHttpServer/build/src/tests/CMakeFiles/unitTestsExe.out.dir/`
+-- From the above folder run: `lcov –c –d . –o testsCovrage.info`
+-- Then generate the HTML report: `genhtml testsCovrage.info`
+-- Several files will be added to current folder, out of which the `index.html` file will have the unit tests covrage report

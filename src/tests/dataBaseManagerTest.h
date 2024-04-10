@@ -6,9 +6,11 @@
 TEST(dataBaseManagerTest, dataBaseManagerBasicest)
 { 
 	std::cout << "dataBaseManagerTest::dataBaseManagerBasicest - start" << std::endl;
+	ObjectLib1 testedObj;
 	HeapLeakChecker heap_checker("dataBaseManagerBasicest");
     {
-		std::cout << "some stuff" << std::endl;
+		std::cout << "dataBaseManagerTest::dataBaseManagerBasicest - calling func1()" << std::endl;
+		testedObj.func1();
     }
 
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
