@@ -36,8 +36,14 @@ target_include_directories(${testsExeName} PUBLIC /usr/include/gperftools)
 target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc infraLib dataBaseManagerLib)
 
 # For test covrage:
-target_compile_options(${testsExeName} PUBLIC  ${unit_tests_compile_options})
-target_link_options(${testsExeName} PUBLIC ${unit_tests_link_options})
+message("BUILD_UNIT_TESTS=${BUILD_UNIT_TESTS}")
+if( BUILD_UNIT_TESTS ) 
+    message("BUILD_UNIT_TESTS evaluates to True")
+    target_compile_options(${testsExeName} PUBLIC ${unit_tests_compile_options})
+    target_link_options(${testsExeName} PUBLIC ${unit_tests_link_options})
+    message(STATUS "setting additional compiler flags for unit testing:${unit_tests_compile_options}")
+    message(STATUS "setting additional linker flags for unit testing:${unit_tests_link_options}")
+endif()
 
 # For debug
 get_target_property(target_includes ${testsExeName} INTERFACE_INCLUDE_DIRECTORIES)
