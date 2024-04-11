@@ -1,7 +1,8 @@
 # CMakeLists.txt for the unit tests:
 # =================================
 message(STATUS "CMakeLists.txt for unit tests of ${CMAKE_PROJECT_NAME}")
- 
+include(../../globalDefines.cmake)
+
 # Locate GTest
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS} 
@@ -35,8 +36,8 @@ target_include_directories(${testsExeName} PUBLIC /usr/include/gperftools)
 target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc infraLib dataBaseManagerLib)
 
 # For test covrage:
-target_compile_options(${testsExeName} PUBLIC -g -O0 -Wall -fprofile-arcs -ftest-coverage)
-target_link_options(${testsExeName} PUBLIC -fprofile-arcs -ftest-coverage)
+target_compile_options(${testsExeName} PUBLIC  ${unit_tests_compile_options})
+target_link_options(${testsExeName} PUBLIC ${unit_tests_link_options})
 
 # For debug
 get_target_property(target_includes ${testsExeName} INTERFACE_INCLUDE_DIRECTORIES)
