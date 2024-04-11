@@ -11,6 +11,10 @@ add_executable(${exeName} main.cpp)
 # Link the executable with all relevant libraries
 target_link_libraries(${exeName} PUBLIC infraLib dataBaseManagerLib)
 
+# For test covrage:
+target_compile_options(${exeName} PUBLIC -g -O0 -Wall -fprofile-arcs -ftest-coverage)
+target_link_options(${exeName} PUBLIC -fprofile-arcs -ftest-coverage)
+
 # Add the binary tree to the search path for include files
 # so that we will find sampleObj1.h
 target_include_directories(${exeName} PUBLIC

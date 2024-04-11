@@ -9,4 +9,7 @@ add_library(${libName} cpp11ThreadWrapper.cpp)
 # to run on Linux machine, so link to pthread.
 target_link_libraries(${libName} pthread)
 
+target_compile_options(${libName} PUBLIC -g -O0 -Wall -fprofile-arcs -ftest-coverage)
+target_link_options(${libName} PUBLIC -fprofile-arcs -ftest-coverage)
+
 message(STATUS "CMakeLists.txt of ${libName} - created library")

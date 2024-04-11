@@ -34,6 +34,10 @@ target_include_directories(${testsExeName} PUBLIC /usr/include/gperftools)
 # All other libraries are project's propriatry libraires that are to be tested.
 target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc infraLib dataBaseManagerLib)
 
+# For test covrage:
+target_compile_options(${testsExeName} PUBLIC -g -O0 -Wall -fprofile-arcs -ftest-coverage)
+target_link_options(${testsExeName} PUBLIC -fprofile-arcs -ftest-coverage)
+
 # For debug
 get_target_property(target_includes ${testsExeName} INTERFACE_INCLUDE_DIRECTORIES)
 foreach(include_dir ${target_includes})
