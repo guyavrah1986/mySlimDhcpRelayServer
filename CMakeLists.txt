@@ -5,6 +5,14 @@ cmake_minimum_required(VERSION 3.22.1)
 # Add/customize global project settings:
 project(myHttpServer)
 set(CMAKE_CXX_STANDARD 20)
+
+message(STATUS "main CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
+message(STATUS "The root (top level) folder of the project is:${PROJECT_SOURCE_DIR}")
+
+# Help CMake find relevant files for the Log4cxx logger package
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
+find_package(Log4cxx REQUIRED)
+
 message(STATUS "main CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
 message(STATUS "The root folder of the project is:${PROJECT_SOURCE_DIR}")
 

@@ -2,9 +2,8 @@
 C++ based multi threaded slim HTTP server
 
 # Initial development environment requierments
-- `git` should be installed
-- `cmake` should be installed
-- Currently the development environment is Ubuntu22.04.
+- `sudo atp-get install git cmake build-essential libapr1-dev gzip zip`
+- Currently the development environment is Ubuntu22.04 (most of the above are probably already present).
 - install GTEST: 
 * `sudo apt-get install libgtest-dev`
 * `cd /usr/src/gtest`
@@ -12,9 +11,12 @@ C++ based multi threaded slim HTTP server
 -- `sudo make`
 -- `sudo cp lib/*.a /usr/lib`
 - Install `google-perftools` and `libgoogle-perftools-dev`
-* sudo apt-get install google-perftools libgoogle-perftools-dev
+* `sudo apt-get install google-perftools libgoogle-perftools-dev`
 -- The libgoogle-perftools-dev is for the gperftools/heap-checker.h.
 - Install `lcov`: `sudo apt-get update install lcov` (version used: 1.14)
+- Install log4cxx:
+-- `sudo apt-get install libapr1-dev libaprutil-dev liblog4cxx-dev`
+-- NOTE: For production environment, the following is needed: `liblog4cxx`, `libapr1` and `libaprutil`.
 
 # Build instructions:
 - `cd myHttpServer` (root folder of the project)
