@@ -20,7 +20,7 @@ C++ based multi threaded slim HTTP server
 - `cd myHttpServer` (root folder of the project)
 - Create the "out of source" `build` folder: `mkdir build`
 - `cd build`
-- `build$ cmake ../`
+- `build$ cmake ../ -DBUILD_UNIT_TESTS=True` (for debug/unit test/ non production mode)
 - `build$ make` (it will build according to the Makefile that is present there - main artifcat is `myHttpServer.out`)
 
 # Run unit tests:

@@ -16,4 +16,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src/dataBaseManager)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/tests)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/playground)
+
 add_subdirectory(src)
