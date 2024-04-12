@@ -19,6 +19,7 @@ if( BUILD_UNIT_TESTS )
     message(STATUS "setting additional compiler flags for unit testing:${unit_tests_compile_options}")
     message(STATUS "setting additional linker flags for unit testing:${unit_tests_link_options}")
     target_link_libraries(${exeName} PUBLIC playgroundLib)
+    target_compile_definitions(${exeName} PRIVATE ENABLE_TESTING)
 endif()
 
 
