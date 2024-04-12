@@ -6,16 +6,16 @@
 
 using namespace std;
 
-
-void runPlaygroundFunc()
-{
-	sampleFuncToTestBoostLogger();
-}
-
 int main(int argc, char** argv)
 {
 	cout << "main - started" << endl;
-	runPlaygroundFunc();
+	if (string(argv[1]) == "-p")
+	{
+		runPlaygroundFunc(argc, argv);
+		return 0;
+	}
+
+	cout << "main - running production code" << endl;
 	cout << "main - end" << endl;
 	return 0;
 }

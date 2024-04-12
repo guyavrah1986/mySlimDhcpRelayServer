@@ -4,6 +4,11 @@
 
 using namespace std;
 
+void runPlaygroundFunc(int argc, char** argv)
+{
+	sampleFuncToTestBoostLogger();
+}
+
 void sampleFuncToTestBoostLogger()
 {
     cout << "sampleFuncToTestBoostLogger - start" << endl;
