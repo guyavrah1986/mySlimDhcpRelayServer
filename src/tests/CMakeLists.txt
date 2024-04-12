@@ -33,7 +33,7 @@ target_include_directories(${testsExeName} PUBLIC /usr/include/gperftools)
 # tcmalloc - is linked in order to use tcmalloc in the unit tests instead of glibc malloc - only
 # for the sake of using the heap checker feature of the tcmalloc library.
 # All other libraries are project's propriatry libraires that are to be tested.
-target_link_libraries(${testsExeName} ${GTEST_LIBRARY} tcmalloc infraLib dataBaseManagerLib)
+target_link_libraries(${testsExeName} ${GTEST_LIBRARY} log4cxx tcmalloc infraLib dataBaseManagerLib)
 
 # For test covrage:
 message("BUILD_UNIT_TESTS=${BUILD_UNIT_TESTS}")
