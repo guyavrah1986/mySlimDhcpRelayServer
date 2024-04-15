@@ -16,6 +16,10 @@ find_package(Log4cxx REQUIRED)
 message(STATUS "main CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
 message(STATUS "The root folder of the project is:${PROJECT_SOURCE_DIR}")
 
+# Add the following compilation settings (flags) globally to ALL targets
+# in this project
+add_compile_options(-Wall -Werror)
+
 include_directories(src)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/infra)
