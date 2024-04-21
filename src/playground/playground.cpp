@@ -1,5 +1,6 @@
 #include <iostream>
 #include <unordered_map>
+#include <thread>
 
 #include "include/playground.h"
 
@@ -37,5 +38,22 @@ void cpp11ThreadExample(int argc, char** argv)
     string funcName = "cpp11ThreadExample - ";
     cout << funcName + "START" << endl;
 
+    // create a new thread and assgin it some work to do
+    int num = 15;
+    cout << funcName + "initially, num is:" << num << endl;
+    thread t1(&workerThreadFunc1, ref(num));
+
+    // wait for the worker thread to finish
+    cout << funcName + "waiting for worker thread to terminate" << endl;
+    t1.join();
+    cout << funcName + "after worker thread is done waiting, num is:" << num << endl;
     cout << funcName + "END" << endl;
+}
+
+void workerThreadFunc1(int& num)
+{
+    string funcName = "workerThreadFunc1 - ";
+    cout << funcName + "start, got num:" << num << endl;
+    num += 1;
+    cout << funcName + "end" << endl;
 }
