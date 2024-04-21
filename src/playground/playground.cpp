@@ -1,6 +1,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <thread>
+#include <log4cxx/logger.h>
+#include <log4cxx/basicconfigurator.h>
 
 #include "include/playground.h"
 
@@ -9,6 +11,9 @@ using namespace std;
 void runPlaygroundFunc(int argc, char** argv)
 {
 	string funcName = "runPlaygroundFunc - ";
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "===started " + funcName);
+
     cout << funcName + "start" << endl;
 
     // initialize the dictionary of functions:
@@ -17,6 +22,7 @@ void runPlaygroundFunc(int argc, char** argv)
       
     // Add functions to the dictionary
     funcDict["cpp11ThreadExample"] = &cpp11ThreadExample;
+    funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
 
     // extract the 2nd argument which indicates the function to run:
     string funcToRunName = string(argv[2]);
@@ -56,4 +62,13 @@ void workerThreadFunc1(int& num)
     cout << funcName + "start, got num:" << num << endl;
     num += 1;
     cout << funcName + "end" << endl;
+}
+
+void simpleSocketListeningThreadFunc(int argc, char** argv)
+{
+	//LOG4CXX_INFO(playgroundLogger, "===simpleSocketListeningThreadFunc - start===");
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "start");
+    //LOG4CXX_INFO(playgroundLogger, "===simpleSocketListeningThreadFunc - end===");
+    LOG4CXX_INFO(rootLogger, "end");
 }

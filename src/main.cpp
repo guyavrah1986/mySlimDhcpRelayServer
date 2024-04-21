@@ -10,9 +10,12 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	cout << "main - started" << endl;
+
+	// This line will configuer the root logger for the entire
+	// application and/or playground flow
 	log4cxx::BasicConfigurator::configure();
-	auto mainFuncLogger = log4cxx::Logger::getLogger("GlobalLogger.main");
-    LOG4CXX_INFO(mainFuncLogger, "===started the logger===");
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "===started the logger===");
 
 #ifdef ENABLE_TESTING
 	if (string(argv[1]) == "-p")
@@ -22,7 +25,7 @@ int main(int argc, char** argv)
 	}
 #endif
 
-	LOG4CXX_INFO(mainFuncLogger, "main - running production code");
+	//LOG4CXX_INFO(rootLogger, "main - running production code");
 	cout << "main - end" << endl;
 	return 0;
 }
