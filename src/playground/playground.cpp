@@ -12,9 +12,7 @@ void runPlaygroundFunc(int argc, char** argv)
 {
 	string funcName = "runPlaygroundFunc - ";
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "===started " + funcName);
-
-    cout << funcName + "start" << endl;
+    LOG4CXX_INFO(rootLogger, "started " + funcName);
 
     // initialize the dictionary of functions:
     typedef void (*funcPointer)(int, char**);
@@ -24,19 +22,20 @@ void runPlaygroundFunc(int argc, char** argv)
     funcDict["cpp11ThreadExample"] = &cpp11ThreadExample;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
 
-    // extract the 2nd argument which indicates the function to run:
-    string funcToRunName = string(argv[2]);
+    // extract the 3rd argument which indicates the function to run:
+    string funcToRunName = string(argv[3]);
     auto it = funcDict.find(funcToRunName);
     if (nullptr == it)
     {
-        cout << funcName + "got an invalid name of playground function to run" << endl;
+        LOG4CXX_ERROR(rootLogger, "got an invalid name of playground function to run:" + funcName);
         return;
     }
 
-    cout << funcName + "about to run function:" << funcToRunName << endl;
+    LOG4CXX_INFO(rootLogger, "about to run function:" + funcName);
     (*it->second)(argc, argv);
-    cout << funcName + "back from function:" << funcToRunName << endl;
-    cout << funcName + "end" << endl;
+    cout << funcName + " function:" << funcToRunName << endl;
+    LOG4CXX_INFO(rootLogger, "back from function:" + funcName);
+    LOG4CXX_INFO(rootLogger, "done running:" + funcName);
 }
 
 void cpp11ThreadExample(int argc, char** argv)
@@ -66,9 +65,7 @@ void workerThreadFunc1(int& num)
 
 void simpleSocketListeningThreadFunc(int argc, char** argv)
 {
-	//LOG4CXX_INFO(playgroundLogger, "===simpleSocketListeningThreadFunc - start===");
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start");
-    //LOG4CXX_INFO(playgroundLogger, "===simpleSocketListeningThreadFunc - end===");
     LOG4CXX_INFO(rootLogger, "end");
 }

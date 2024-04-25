@@ -12,11 +12,17 @@ using namespace std;
 int main(int argc, char **argv)
 {
 	testing::InitGoogleTest(&argc, argv);
-	cout << "main - START of unit tests" << endl;
-	log4cxx::BasicConfigurator::configure();
+
+	// The first paramter is the path to the logger configuration file
+	const string unitTestLoggingConfigurationFileName = string(argv[1]);
+	cout << "main - the logger configuration file is:" << unitTestLoggingConfigurationFileName << endl;
+
+	// This line will configuer the root logger for the entire
+	// application and/or playground flow
+	log4cxx::PropertyConfigurator::configure(unitTestLoggingConfigurationFileName.c_str());
 	auto unitTestLogger = log4cxx::Logger::getLogger("GlobalLogger.main");
-	LOG4CXX_INFO(unitTestLogger, "===started the logger for the unit tests===");
+	LOG4CXX_INFO(unitTestLogger, "main - about to start to run unit tests");
 	int unitTestRetCode = RUN_ALL_TESTS();
-	cout << "main - END of unit tests" << endl;
+	LOG4CXX_INFO(unitTestLogger, "main - END of unit tests");
 	return unitTestRetCode;
 }
