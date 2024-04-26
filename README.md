@@ -2,7 +2,7 @@
 C++ based multi threaded slim HTTP server
 
 # Initial development environment requierments
-- `sudo atp-get install git cmake build-essential libapr1-dev gzip zip`
+- `sudo atp-get install git cmake build-essential libapr1-dev gzip zip net-tools`
 - Currently the development environment is Ubuntu22.04 (most of the above are probably already present).
 - install GTEST: 
 * `sudo apt-get install libgtest-dev`
