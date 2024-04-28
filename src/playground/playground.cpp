@@ -59,12 +59,13 @@ void cpp11ThreadExample(int argc, char** argv)
     cout << funcName + "END" << endl;
 }
 
-void workerThreadFunc1(int& num)
+void workerThreadFunc1(int num)
 {
-    string funcName = "workerThreadFunc1 - ";
-    cout << funcName + "start, got num:" << num << endl;
-    num += 1;
-    cout << funcName + "end" << endl;
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "START of handler function, the socket got is:" << num);
+    size_t threadId = hash<thread::id>{}(this_thread::get_id());
+    LOG4CXX_INFO(rootLogger, "the thread ID is:" << threadId);
+    LOG4CXX_INFO(rootLogger, "END of handler function");
 }
 
 void simpleSocketListeningThreadFunc(int argc, char** argv)
@@ -121,6 +122,12 @@ void simpleSocketListeningThreadFunc(int argc, char** argv)
     while((client_sock = accept(socket_desc, (struct sockaddr*)&client, (socklen_t*)&c)))
     {
         LOG4CXX_INFO(rootLogger, "Accepted connection on the main thread which is:" << mainThreadId);
+        
+        // Create a thread to handle the connection
+        
+		cpp11ThreadWrapper sampleWrappedThread(std::move(thread(workerThreadFunc1, client_sock)), &thread::join);
+        
+        LOG4CXX_INFO(rootLogger, "kicked off a worker thread for client socket:" << client_sock);
         /*
         if( pthread_create( &thread_id , NULL ,  connection_handler , (void*) &client_sock) < 0)
         {
@@ -132,6 +139,7 @@ void simpleSocketListeningThreadFunc(int argc, char** argv)
         //pthread_join( thread_id , NULL);
         puts("Handler assigned");
         */
+        LOG4CXX_INFO(rootLogger, "back to wait (sleep) on accept...");
     }
      
     if (client_sock < 0)

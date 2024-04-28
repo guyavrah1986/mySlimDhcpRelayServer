@@ -13,5 +13,7 @@ if( BUILD_UNIT_TESTS )
     message(STATUS "setting additional linker flags for unit testing:${unit_tests_link_options}")
 endif()
 
+# Anyways link to the infra library
+target_link_libraries(${libName} PUBLIC infraLib)
 message(STATUS "End of CMakeLists.txt of ${libName} - created library")
 
