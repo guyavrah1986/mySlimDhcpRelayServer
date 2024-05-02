@@ -2,7 +2,7 @@
 # ======================================================
 set(libName "dataBaseManagerLib")
 
-add_library(${libName} lib1.cpp)
+add_library(${libName} SHARED lib1.cpp)
 
 # Currently this library (object) does not depend on any other module/object
 # in the project. When it changes, add here what needed.

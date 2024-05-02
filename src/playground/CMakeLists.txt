@@ -1,7 +1,7 @@
 # CMakeLists.txt file for the playgroundLib library:
 # =================================================
 set(libName "playgroundLib")
-add_library(${libName} playground.cpp)
+add_library(${libName} SHARED playground.cpp)
 include(../../globalDefines.cmake)
 
 message("BUILD_UNIT_TESTS=${BUILD_UNIT_TESTS}")
