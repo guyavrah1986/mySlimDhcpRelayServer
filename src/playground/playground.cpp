@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <thread>
 #include <unordered_map>
+#include <unistd.h>    //write
 
 #include "include/playground.h"
 #include "../infra/include/cpp11ThreadWrapper.h"
@@ -65,6 +66,13 @@ void workerThreadFunc1(int num)
     LOG4CXX_INFO(rootLogger, "START of handler function, the socket got is:" << num);
     size_t threadId = hash<thread::id>{}(this_thread::get_id());
     LOG4CXX_INFO(rootLogger, "the thread ID is:" << threadId);
+
+    // For debug, write the socket value allocated to this request
+    // back to the client:
+    string msgToClient = "The socket number allocated was:" + num;
+
+    size_t msgLen = msgToClient.length();
+    write(num, msgToClient.c_str(), msgLen);
     LOG4CXX_INFO(rootLogger, "END of handler function");
 }
 
@@ -113,9 +121,11 @@ void simpleSocketListeningThreadFunc(int argc, char** argv)
     LOG4CXX_INFO(rootLogger, "Socket is now listening...");
 
     // for debug - remove afterwards
+    /*
     LOG4CXX_INFO(rootLogger, "Press any key to continue");
     char cInput;
     cin >> cInput;
+    */
 
     // This is where the server accepts incoming connections
     LOG4CXX_INFO(rootLogger, "about to start and accepting connections...");
