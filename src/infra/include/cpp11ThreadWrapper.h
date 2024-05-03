@@ -30,8 +30,11 @@ public:
 	typedef void (std::thread::*RAIIAction)();
 
 	Cpp11ThreadWrapper(std::thread&& t, RAIIAction action);
-	~Cpp11ThreadWrapper();
+	virtual ~Cpp11ThreadWrapper();
 	std::thread& GetThread();
+
+	// abstract interface
+	virtual void SetScheduling(int priority, int policy=-1) = 0;
 
 private:
 	std::thread m_thread;
