@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	// This line will configuer the root logger for the entire
 	// application and/or playground flow
 	log4cxx::PropertyConfigurator::configure(unitTestLoggingConfigurationFileName.c_str());
-	auto unitTestLogger = log4cxx::Logger::getLogger("GlobalLogger.main");
+	auto unitTestLogger = log4cxx::Logger::getRootLogger();
 	LOG4CXX_INFO(unitTestLogger, "main - about to start to run unit tests");
 	int unitTestRetCode = RUN_ALL_TESTS();
 	LOG4CXX_INFO(unitTestLogger, "main - END of unit tests");

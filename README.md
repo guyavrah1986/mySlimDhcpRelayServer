@@ -29,9 +29,10 @@ C++ based multi threaded slim HTTP server
 # Run unit tests:
 - After sucessfully building the project, the unit tests (GTest based) will be built as well.
 - To run ALL the unit tests: `build$ src/tests/unitTestsExe.out <full_path_to_logger_configuration_file>`
-- Run a specific unit test: `build$ src/tests/unitTestsExe.out --gtest_filter=sampleObjectTest.createSingleMySampleObject`
-- Run unit test with tcmalloc's heap leak detection enabled: `build$ env HEAPCHECK=local src/tests/unitTestsExe.out --gtest_filter=sampleObjectTest.createSingleMySampleObject`
-- Generating unit test covrage: 
+- Run a specific unit test: `build$ src/tests/unitTestsExe.out <full_path_to_logger_configuration_file> --gtest_filter=sampleObjectTest.createSingleMySampleObject`
+- Run unit test with tcmalloc's heap leak detection enabled: 
+-- `build$ env HEAPCHECK=local src/tests/unitTestsExe.out <full_path_to_logger_configuration_file> --gtest_filter=sampleObjectTest.createSingleMySampleObject`
+# Generating unit test covrage: 
 -- Run the unit tests (as described above)
 -- From the `build` folder run: `lcov –c –d . –o testsCovrage.info`
 -- Then generate the HTML report: `genhtml testsCovrage.info`

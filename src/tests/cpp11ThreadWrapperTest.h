@@ -1,11 +1,14 @@
 #include <thread> 						// applicble since C++11
 #include <gperftools/heap-checker.h> 	// for tcmalloc heap checking
+#include <log4cxx/logger.h>
 
 #include "../infra/include/cpp11ThreadWrapper.h"
 
 TEST(cpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletion)
 { 
-	std::cout << "cpp11ThreadWrapperTest::createSingleThreadAndRunTillCompletion - start" << std::endl;
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "about to create single cpp11ThreadWrapper object \
+		and check for leaks");
 	HeapLeakChecker heap_checker("test_singleCpp11ThreadWrapperTest");
     {
 	    std::thread sampleThread;
@@ -13,5 +16,5 @@ TEST(cpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletion)
 		cpp11ThreadWrapper sampleWrappedThread(std::move(sampleThread), action);
     }
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
-	std::cout << "cpp11ThreadWrapperTest::createSingleThreadAndRunTillCompletion - end" << std::endl;
+	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }
