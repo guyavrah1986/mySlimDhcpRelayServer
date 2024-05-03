@@ -8,15 +8,13 @@ PosixCpp11ThreadWrapper::PosixCpp11ThreadWrapper(thread&& t, RAIIAction action)
     : Cpp11ThreadWrapper(move(t), action)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    // TODO:  add  // << this->GetThreadId to the log below!
-    LOG4CXX_INFO(rootLogger, "created thread with thread ID:");
+    LOG4CXX_INFO(rootLogger, "created thread with thread ID:" << this->m_threadId);
 }
 
 PosixCpp11ThreadWrapper::~PosixCpp11ThreadWrapper()
 {
-    // TODO:  add  // << this->GetThreadId to the log below!
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "destroyed thread with thread ID:");
+    LOG4CXX_INFO(rootLogger, "destroyed thread with thread ID:" << this->m_threadId);
 }
 
 void PosixCpp11ThreadWrapper::SetScheduling(int priority, int policy)

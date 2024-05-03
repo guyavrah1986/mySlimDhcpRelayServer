@@ -36,6 +36,9 @@ public:
 	// abstract interface
 	virtual void SetScheduling(int priority, int policy=-1) = 0;
 
+protected:
+	size_t m_threadId;
+
 private:
 	std::thread m_thread;
 	RAIIAction m_actionUponDestruction;

@@ -69,7 +69,6 @@ int cpp11StdThreadWrapperSampleFunc(int num)
 void cpp11StdThreadWrapperExample(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    //size_t threadId = hash<thread::id>{}(this_thread::get_id());
     LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
     PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(cpp11StdThreadWrapperSampleFunc, 1)), &thread::join);
     LOG4CXX_INFO(rootLogger, "end of std::thread wrapper usage example");

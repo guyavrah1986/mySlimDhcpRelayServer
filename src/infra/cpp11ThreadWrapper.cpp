@@ -3,10 +3,11 @@
 using namespace std;
 
 Cpp11ThreadWrapper::Cpp11ThreadWrapper(thread&& t, RAIIAction action)
-	: m_thread(move(t))
+	: m_threadId(hash<thread::id>{}(this_thread::get_id()))
+	, m_thread(move(t))
 	, m_actionUponDestruction(action)
 {
-
+	
 }
 
 Cpp11ThreadWrapper::~Cpp11ThreadWrapper()
