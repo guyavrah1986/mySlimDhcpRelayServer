@@ -17,16 +17,18 @@ PosixCpp11ThreadWrapper::~PosixCpp11ThreadWrapper()
     LOG4CXX_INFO(rootLogger, "destroyed thread with thread ID:" << this->m_threadId);
 }
 
-void PosixCpp11ThreadWrapper::SetScheduling(int priority, int policy)
+bool PosixCpp11ThreadWrapper::SetScheduling(int priority, int policy)
 {
-/*
-void Cpp11ThreadWrapper::SetScheduling(int policy, int priority)
-{
-        sch_params.sched_priority = priority;
-        if (pthread_setschedparam(th.native_handle(), policy, &sch_params))
-		{
-            std::cerr << "Failed to set Thread scheduling : " << std::strerror(errno) << std::endl;
-        }
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    // TODO: validate arguments!
+    sch_params.sched_priority = priority;
+    if (pthread_setschedparam(this->GetThread().native_handle(), policy, &sch_params))
+	{
+        LOG4CXX_ERROR(rootLogger, "Failed to set thread :");
+        return false;
+    }
+
+    LOG4CXX_INFO(rootLogger, "set  thread scheduling priority:" << priority);
+    return true;
 }
-*/
-}
+
