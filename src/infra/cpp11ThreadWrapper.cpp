@@ -2,14 +2,14 @@
 	
 using namespace std;
 
-cpp11ThreadWrapper::cpp11ThreadWrapper(thread&& t, RAIIAction action)
+Cpp11ThreadWrapper::Cpp11ThreadWrapper(thread&& t, RAIIAction action)
 	: m_thread(move(t))
 	, m_actionUponDestruction(action)
 {
 
 }
 
-cpp11ThreadWrapper::~cpp11ThreadWrapper()
+Cpp11ThreadWrapper::~Cpp11ThreadWrapper()
 {
 	if (m_thread.joinable())
 	{
@@ -17,7 +17,7 @@ cpp11ThreadWrapper::~cpp11ThreadWrapper()
 	}
 }
 
-std::thread& cpp11ThreadWrapper::GetThread()
+std::thread& Cpp11ThreadWrapper::GetThread()
 {
 	return m_thread;
 }

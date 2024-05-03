@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <thread>
 #include <unordered_map>
-#include <unistd.h>    //write
+#include <unistd.h>
 
 #include "include/playground.h"
 #include "../infra/include/cpp11ThreadWrapper.h"
@@ -24,7 +24,8 @@ void runPlaygroundFunc(int argc, char** argv)
     unordered_map<string, funcPointer> funcDict;
       
     // Add functions to the dictionary
-    funcDict["cpp11ThreadExample"] = &cpp11ThreadExample;
+    funcDict["cpp11ThreadExample"] = &cpp11StdThreadExample;
+    funcDict["cpp11StdThreadWrapperExample"] = &cpp11StdThreadWrapperExample;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
 
     // extract the 3rd argument which indicates the function to run:
@@ -43,7 +44,7 @@ void runPlaygroundFunc(int argc, char** argv)
     LOG4CXX_INFO(rootLogger, "done running:" + funcName);
 }
 
-void cpp11ThreadExample(int argc, char** argv)
+void cpp11StdThreadExample(int argc, char** argv)
 {
     string funcName = "cpp11ThreadExample - ";
     cout << funcName + "START" << endl;
@@ -58,6 +59,23 @@ void cpp11ThreadExample(int argc, char** argv)
     t1.join();
     cout << funcName + "after worker thread is done waiting, num is:" << num << endl;
     cout << funcName + "END" << endl;
+}
+
+int cpp11StdThreadWrapperSampleFunc(int num)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    size_t threadId = hash<thread::id>{}(this_thread::get_id());
+    LOG4CXX_INFO(rootLogger, "running thread:" << threadId << ", got num:" << num);
+    return 0;
+}
+
+void cpp11StdThreadWrapperExample(int argc, char** argv)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    //size_t threadId = hash<thread::id>{}(this_thread::get_id());
+    LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
+    Cpp11ThreadWrapper sampleWrappedThread(std::move(thread(cpp11StdThreadWrapperSampleFunc, 1)), &thread::join);
+    LOG4CXX_INFO(rootLogger, "end of std::thread wrapper usage example");
 }
 
 void workerThreadFunc1(int num)
@@ -135,7 +153,7 @@ void simpleSocketListeningThreadFunc(int argc, char** argv)
         
         // Create a thread to handle the connection
         
-		cpp11ThreadWrapper sampleWrappedThread(std::move(thread(workerThreadFunc1, client_sock)), &thread::join);
+		Cpp11ThreadWrapper sampleWrappedThread(std::move(thread(workerThreadFunc1, client_sock)), &thread::join);
         
         LOG4CXX_INFO(rootLogger, "kicked off a worker thread for client socket:" << client_sock);
         /*

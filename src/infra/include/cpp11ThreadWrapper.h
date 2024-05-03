@@ -24,13 +24,13 @@
 
 #include <thread>
 
-class cpp11ThreadWrapper
+class Cpp11ThreadWrapper
 {
 public:
 	typedef void (std::thread::*RAIIAction)();
 
-	cpp11ThreadWrapper(std::thread&& t, RAIIAction action);
-	~cpp11ThreadWrapper();
+	Cpp11ThreadWrapper(std::thread&& t, RAIIAction action);
+	~Cpp11ThreadWrapper();
 	std::thread& GetThread();
 
 private:

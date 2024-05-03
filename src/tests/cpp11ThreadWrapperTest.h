@@ -12,8 +12,8 @@ TEST(cpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletion)
 	HeapLeakChecker heap_checker("test_singleCpp11ThreadWrapperTest");
     {
 	    std::thread sampleThread;
-		cpp11ThreadWrapper::RAIIAction action;
-		cpp11ThreadWrapper sampleWrappedThread(std::move(sampleThread), action);
+		Cpp11ThreadWrapper::RAIIAction action;
+		Cpp11ThreadWrapper sampleWrappedThread(std::move(sampleThread), action);
     }
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
