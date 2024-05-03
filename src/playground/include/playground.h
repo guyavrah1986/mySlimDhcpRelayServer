@@ -11,6 +11,7 @@ void cpp11StdThreadWrapperExample(int argc, char** argv);
 
 void simpleSocketListeningThreadFunc(int argc, char** argv);
 
+void posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv);
 
 // Utilities functions
 // ===================

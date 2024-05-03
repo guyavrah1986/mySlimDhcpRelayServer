@@ -13,7 +13,7 @@ class PosixCpp11ThreadWrapper : public Cpp11ThreadWrapper
 public:
     PosixCpp11ThreadWrapper(std::thread&& t, RAIIAction action);
     virtual ~PosixCpp11ThreadWrapper();
-    virtual bool SetScheduling(int priority, int policy);
+    virtual bool SetScheduling(int priority, int policy = -1);
 
 private:
 	sched_param sch_params;

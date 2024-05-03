@@ -26,6 +26,7 @@ void runPlaygroundFunc(int argc, char** argv)
     funcDict["cpp11ThreadExample"] = &cpp11StdThreadExample;
     funcDict["cpp11StdThreadWrapperExample"] = &cpp11StdThreadWrapperExample;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
+    funcDict["posixCpp11StdThreadWrapperSetThreadPriority"] = &posixCpp11StdThreadWrapperSetThreadPriority;
 
     // extract the 3rd argument which indicates the function to run:
     string funcToRunName = string(argv[3]);
@@ -72,6 +73,37 @@ void cpp11StdThreadWrapperExample(int argc, char** argv)
     LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
     PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(cpp11StdThreadWrapperSampleFunc, 1)), &thread::join);
     LOG4CXX_INFO(rootLogger, "end of std::thread wrapper usage example");
+}
+
+void runLoopFunc()
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    unsigned int iteration = 0;
+    while (true)
+    {
+        ++iteration;
+        LOG4CXX_INFO(rootLogger, "within worker thread in iteration:" << ++iteration);
+        sleep(5);
+    }
+}
+
+void posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
+    PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(runLoopFunc)), &thread::join);
+    LOG4CXX_INFO(rootLogger, "created and started the POSIX thread wrapper");
+    int priorityToSet = 5;
+    bool ret = sampleWrappedThread.SetScheduling(priorityToSet);
+    if (false == ret)
+    {
+        LOG4CXX_ERROR(rootLogger, "was unable to set thread's priority, aborting");
+        return;
+    }
+
+    LOG4CXX_INFO(rootLogger, "changed its priority to:" << priorityToSet);
+    size_t workerThreadId = sampleWrappedThread.GetThreadId();
+    LOG4CXX_INFO(rootLogger, "check the priority of thread:" << workerThreadId);
 }
 
 void workerThreadFunc1(int num)
