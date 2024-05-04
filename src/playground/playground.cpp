@@ -1,4 +1,6 @@
 #include <arpa/inet.h>
+#include <chrono>
+#include <cstring>      // for stderror()
 #include <iostream>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/logger.h>
@@ -13,36 +15,39 @@
 
 using namespace std;
 
-void runPlaygroundFunc(int argc, char** argv)
+int runPlaygroundFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "about to run some public function");
 
     // initialize the dictionary of functions:
-    typedef void (*funcPointer)(int, char**);
+    typedef int (*funcPointer)(int, char**);
     unordered_map<string, funcPointer> funcDict;
       
     // Add functions to the dictionary
+    // -------------------------------
     funcDict["cpp11ThreadExample"] = &cpp11StdThreadExample;
+    funcDict["setThreadPriorityExample"] = &setThreadPriorityExample;
     funcDict["cpp11StdThreadWrapperExample"] = &cpp11StdThreadWrapperExample;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
     funcDict["posixCpp11StdThreadWrapperSetThreadPriority"] = &posixCpp11StdThreadWrapperSetThreadPriority;
-
+    
     // extract the 3rd argument which indicates the function to run:
     string funcToRunName = string(argv[3]);
     auto it = funcDict.find(funcToRunName);
     if (nullptr == it)
     {
         LOG4CXX_ERROR(rootLogger, "got an invalid name of playground function to run:" + funcToRunName);
-        return;
+        return 1;
     }
 
     LOG4CXX_INFO(rootLogger, "about to run function:" + funcToRunName);
-    (*it->second)(argc, argv);
+    int retCode = (*it->second)(argc, argv);
     LOG4CXX_INFO(rootLogger, "back from function:" + funcToRunName);
+    return retCode;
 }
 
-void cpp11StdThreadExample(int argc, char** argv)
+int cpp11StdThreadExample(int argc, char** argv)
 {
     string funcName = "cpp11ThreadExample - ";
     cout << funcName + "START" << endl;
@@ -57,72 +62,39 @@ void cpp11StdThreadExample(int argc, char** argv)
     t1.join();
     cout << funcName + "after worker thread is done waiting, num is:" << num << endl;
     cout << funcName + "END" << endl;
-}
-
-int cpp11StdThreadWrapperSampleFunc(int num)
-{
-    auto rootLogger = log4cxx::Logger::getRootLogger();
-    size_t threadId = hash<thread::id>{}(this_thread::get_id());
-    LOG4CXX_INFO(rootLogger, "running thread:" << threadId << ", got num:" << num);
     return 0;
 }
 
-void cpp11StdThreadWrapperExample(int argc, char** argv)
+int cpp11StdThreadWrapperExample(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
     PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(cpp11StdThreadWrapperSampleFunc, 1)), &thread::join);
     LOG4CXX_INFO(rootLogger, "end of std::thread wrapper usage example");
+    return 0;
 }
 
-void runLoopFunc()
-{
-    auto rootLogger = log4cxx::Logger::getRootLogger();
-    unsigned int iteration = 0;
-    while (true)
-    {
-        ++iteration;
-        LOG4CXX_INFO(rootLogger, "within worker thread in iteration:" << ++iteration);
-        sleep(5);
-    }
-}
-
-void posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
+int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
     PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(runLoopFunc)), &thread::join);
     LOG4CXX_INFO(rootLogger, "created and started the POSIX thread wrapper");
     int priorityToSet = 5;
-    bool ret = sampleWrappedThread.SetScheduling(priorityToSet);
+    bool ret = sampleWrappedThread.SetScheduling(priorityToSet, SCHED_OTHER);
     if (false == ret)
     {
         LOG4CXX_ERROR(rootLogger, "was unable to set thread's priority, aborting");
-        return;
+        return 1;
     }
 
     LOG4CXX_INFO(rootLogger, "changed its priority to:" << priorityToSet);
     size_t workerThreadId = sampleWrappedThread.GetThreadId();
     LOG4CXX_INFO(rootLogger, "check the priority of thread:" << workerThreadId);
+    return 0;
 }
 
-void workerThreadFunc1(int num)
-{
-    auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "START of handler function, the socket got is:" << num);
-    size_t threadId = hash<thread::id>{}(this_thread::get_id());
-    LOG4CXX_INFO(rootLogger, "the thread ID is:" << threadId);
-
-    // For debug, write the socket value allocated to this request
-    // back to the client:
-    string msgToClient = "The socket number allocated was:" + num;
-
-    size_t msgLen = msgToClient.length();
-    write(num, msgToClient.c_str(), msgLen);
-    LOG4CXX_INFO(rootLogger, "END of handler function");
-}
-
-void simpleSocketListeningThreadFunc(int argc, char** argv)
+int simpleSocketListeningThreadFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start");
@@ -137,7 +109,7 @@ void simpleSocketListeningThreadFunc(int argc, char** argv)
     if (-1 == socket_desc)
     {
         LOG4CXX_ERROR(rootLogger, "Could not create socket, aborting");
-        return;
+        return 1;
     }
     
     LOG4CXX_INFO(rootLogger, "Socket created successfully");
@@ -156,7 +128,7 @@ void simpleSocketListeningThreadFunc(int argc, char** argv)
     {
         //print the error message
         LOG4CXX_ERROR(rootLogger, "bind failed, aborting");
-        return;
+        return 1;
     }
 
     LOG4CXX_INFO(rootLogger, "Socket was binded successfully");
@@ -190,8 +162,85 @@ void simpleSocketListeningThreadFunc(int argc, char** argv)
     if (client_sock < 0)
     {
         LOG4CXX_ERROR(rootLogger, "accept failed, aborting");
-        return;
+        return 1;
     }
 
     LOG4CXX_INFO(rootLogger, "end");
+    return 0;
+}
+
+int setThreadPriorityExample(int argc, char** argv)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "start");
+
+    thread t1(f, 1), t2(f, 2);
+    sched_param sch;
+    int policy; 
+    pthread_getschedparam(t1.native_handle(), &policy, &sch);
+    sch.sched_priority = 20;
+    if (pthread_setschedparam(t1.native_handle(), SCHED_FIFO, &sch))
+    {
+        LOG4CXX_ERROR(rootLogger, "Failed to setschedparam: " << strerror(errno));
+        cout << "Failed to setschedparam: " << strerror(errno) << endl;
+        return 1;
+    }
+ 
+    t1.join(); t2.join();
+    LOG4CXX_INFO(rootLogger, "both threads were joined successfully");
+    return 0;
+}
+
+
+
+// ===================
+// Utilities functions:
+// ===================
+void workerThreadFunc1(int num)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "START of handler function, the socket got is:" << num);
+    size_t threadId = hash<thread::id>{}(this_thread::get_id());
+    LOG4CXX_INFO(rootLogger, "the thread ID is:" << threadId);
+
+    // For debug, write the socket value allocated to this request
+    // back to the client:
+    string msgToClient = "The socket number allocated was:" + num;
+
+    size_t msgLen = msgToClient.length();
+    write(num, msgToClient.c_str(), msgLen);
+    LOG4CXX_INFO(rootLogger, "END of handler function");
+}
+
+void runLoopFunc()
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    unsigned int iteration = 0;
+    while (true)
+    {
+        ++iteration;
+        LOG4CXX_INFO(rootLogger, "within worker thread in iteration:" << ++iteration);
+        sleep(5);
+    }
+}
+
+int cpp11StdThreadWrapperSampleFunc(int num)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    size_t threadId = hash<thread::id>{}(this_thread::get_id());
+    LOG4CXX_INFO(rootLogger, "running thread:" << threadId << ", got num:" << num);
+    return 0;
+}
+
+mutex iomutex;
+void f(int num)
+{
+    this_thread::sleep_for(chrono::seconds(1));
+ 
+    sched_param sch;
+    int policy; 
+    pthread_getschedparam(pthread_self(), &policy, &sch);
+    lock_guard<mutex> lk(iomutex);
+    cout << "Thread " << num << " is executing at priority "
+              << sch.sched_priority << '\n';
 }

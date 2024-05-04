@@ -21,10 +21,16 @@ bool PosixCpp11ThreadWrapper::SetScheduling(int priority, int policy)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     // TODO: validate arguments!
-    sch_params.sched_priority = priority;
-    if (pthread_setschedparam(this->GetThread().native_handle(), policy, &sch_params))
+    sched_param param;
+    param.sched_priority = priority;
+    if (pthread_setschedparam(this->GetThread().native_handle(), policy, &param))
 	{
-        LOG4CXX_ERROR(rootLogger, "Failed to set thread :");
+        /*strerror(errno);
+        ESRCH  = 3
+        EINVAL = 22
+        EPERM = 1
+        */
+        LOG4CXX_ERROR(rootLogger, "Failed to set thread:" << this->GetThreadId() << " with error:" << errno);
         return false;
     }
 

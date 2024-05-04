@@ -2,8 +2,8 @@
 /*
 * The motivation of having this wrapper class is to make sure that every 
 * std::thread that is being created and executed will terminate gracefully on
-* all path.
-* An example for an std::thread that  will not terminate gracefully is the 
+* all paths.
+* An example for an std::thread that  will NOT terminate gracefully is the 
 * following use case:
 * {
 *     std::thread t(someFunc);
@@ -34,7 +34,7 @@ public:
 	std::thread& GetThread();
 
 	// abstract interface
-	virtual bool SetScheduling(int priority, int policy = -1) = 0;
+	virtual bool SetScheduling(int priority, int policy = SCHED_OTHER) = 0;
 
 	// getters and setters
 	size_t GetThreadId() const { return this->m_threadId; }
