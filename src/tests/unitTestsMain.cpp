@@ -6,6 +6,7 @@
 #include "../infra/include/logger.h"
 #include "cpp11ThreadWrapperTest.h"
 #include "dataBaseManagerTest.h"
+#include "threadPoolTest.h"
 
 using namespace std;
 

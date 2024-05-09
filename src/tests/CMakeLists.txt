@@ -6,7 +6,7 @@ include(../../globalDefines.cmake)
 # Locate GTest
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS} 
-    "${PROJECT_SOURCE_DIR}/src/utilities/cpp11ThreadWrapper/include")
+    "${PROJECT_SOURCE_DIR}/src/infra/cpp11ThreadWrapper/include")
  
 # Link runTests with what we want to test and the GTest and pthread library
 find_library(GTEST_LIBRARY gtest HINTS /usr/lib)
