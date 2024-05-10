@@ -10,6 +10,13 @@ class ThreadPool
 {
 public:
     explicit ThreadPool(const uint32_t numOfThreads);
+
+    // Non copyable
+    ThreadPool(const ThreadPool& other) = delete;
+    ThreadPool& operator=(const ThreadPool& rhs) = delete;
+    ThreadPool(ThreadPool&& other) = delete;
+    ThreadPool& operator=(const ThreadPool&& rhs) = delete;
+    
     void Start();
     void QueueJobItem(const int num);
     void Stop();

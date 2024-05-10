@@ -9,6 +9,7 @@ ThreadPool::ThreadPool(const uint32_t numOfThreads)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     size_t sizeOfWorkerThreadsVector = numOfThreads;
+    
     // In case user provided 0 or number greater then the maximum possible
     // set the HW concurrency maximum
     if (0 == numOfThreads || thread::hardware_concurrency() < numOfThreads)

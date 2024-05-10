@@ -18,6 +18,12 @@ TEST(threadPoolTest, createSingleThreadPoolWithValidNumOfThreads)
         ThreadPool threadPool(numOfThreads);
         EXPECT_EQ(threadsCapacity, threadPool.GetThreadsCapacity());
         EXPECT_EQ(0, threadPool.GetNumOfThreads());
+
+        // Try to copy the ThreadPool object -- this should NOT compile
+        // ThreadPool tp(threadPool);
+        // ThreadPool tp(std::move(threadPool));
+        // ThreadPool tp = threadPool;
+        // ThreadPool tp(std::move(threadPool));
     }
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 
