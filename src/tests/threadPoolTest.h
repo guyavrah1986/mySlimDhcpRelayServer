@@ -65,22 +65,39 @@ TEST(threadPoolTest, checkBusyFunction)
 TEST(threadPoolTest, checkQueueWorkItemFunction)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    ThreadPool<int> threadPool(std::thread::hardware_concurrency());
+    ThreadPool<int> threadPool1(std::thread::hardware_concurrency());
 
     // At first, the work items queue is empty, so the Busy method
     // should return false
     int workItem1 = 1;
     int workItem2 = 2;
     size_t numOfWorkItems = 0;
-    EXPECT_EQ(true, threadPool.QueueWorkItem(workItem1));
+    EXPECT_EQ(true, threadPool1.QueueWorkItem(workItem1));
     ++numOfWorkItems;
-    EXPECT_EQ(true, threadPool.Busy());
-    EXPECT_EQ(numOfWorkItems, threadPool.GetNumOfWorkItems());
+    EXPECT_EQ(true, threadPool1.Busy());
+    EXPECT_EQ(numOfWorkItems, threadPool1.GetNumOfWorkItems());
 
-    EXPECT_EQ(true, threadPool.QueueWorkItem(workItem2));
+    EXPECT_EQ(true, threadPool1.QueueWorkItem(workItem2));
     ++numOfWorkItems;
-    EXPECT_EQ(true, threadPool.Busy());
-    EXPECT_EQ(numOfWorkItems, threadPool.GetNumOfWorkItems());
+    EXPECT_EQ(true, threadPool1.Busy());
+    EXPECT_EQ(numOfWorkItems, threadPool1.GetNumOfWorkItems());
+
+    ThreadPool<std::string> threadPool2(std::thread::hardware_concurrency());
+
+    // At first, the work items queue is empty, so the Busy method
+    // should return false
+    std::string workItemStr1 = "work-item-1";
+    std::string workItemStr2 = "work-item-2";
+    numOfWorkItems = 0;
+    EXPECT_EQ(true, threadPool2.QueueWorkItem(workItemStr1));
+    ++numOfWorkItems;
+    EXPECT_EQ(true, threadPool2.Busy());
+    EXPECT_EQ(numOfWorkItems, threadPool2.GetNumOfWorkItems());
+
+    EXPECT_EQ(true, threadPool2.QueueWorkItem(workItemStr2));
+    ++numOfWorkItems;
+    EXPECT_EQ(true, threadPool2.Busy());
+    EXPECT_EQ(numOfWorkItems, threadPool2.GetNumOfWorkItems());
 
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }
