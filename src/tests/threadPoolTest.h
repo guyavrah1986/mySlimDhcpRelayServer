@@ -12,8 +12,7 @@ TEST(threadPoolTest, createSingleThreadPoolWithValidNumOfThreads)
     LOG4CXX_INFO(rootLogger, "about to create a thread pool with:" << numOfThreads << " threads");
     unsigned int numOfHwCon = std::thread::hardware_concurrency();
     LOG4CXX_INFO(rootLogger, "numOfHwCon is:" << numOfHwCon);
-
-	HeapLeakChecker heap_checker("test_posixCpp11ThreadWrapper");
+	HeapLeakChecker heap_checker("test_threadPool");
     {
         ThreadPool threadPool(numOfThreads);
         EXPECT_EQ(threadsCapacity, threadPool.GetThreadsCapacity());
@@ -27,5 +26,24 @@ TEST(threadPoolTest, createSingleThreadPoolWithValidNumOfThreads)
     }
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 
+	LOG4CXX_INFO(rootLogger, "test ended successfully");
+}
+
+TEST(threadPoolTest, createThreadPoolWithInValidNumOfThreads)
+{ 
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    unsigned int numOfHwCon = std::thread::hardware_concurrency();
+    LOG4CXX_INFO(rootLogger, "numOfHwCon is:" << numOfHwCon);
+    ThreadPool threadPool1(numOfHwCon + 1);
+    EXPECT_EQ(numOfHwCon, threadPool1.GetThreadsCapacity());
+    EXPECT_EQ(0, threadPool1.GetNumOfThreads());
+
+    ThreadPool threadPool2(0);
+    EXPECT_EQ(numOfHwCon, threadPool2.GetThreadsCapacity());
+    EXPECT_EQ(0, threadPool2.GetNumOfThreads());
+
+    ThreadPool threadPool3(-1);
+    EXPECT_EQ(numOfHwCon, threadPool3.GetThreadsCapacity());
+    EXPECT_EQ(0, threadPool3.GetNumOfThreads());
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }
