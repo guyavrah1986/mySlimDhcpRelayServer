@@ -51,14 +51,36 @@ TEST(threadPoolTest, createThreadPoolWithInValidNumOfThreads)
 TEST(threadPoolTest, checkBusyFunction)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    unsigned int numOfHwCon = std::thread::hardware_concurrency();
-    LOG4CXX_INFO(rootLogger, "numOfHwCon is:" << numOfHwCon);
-    ThreadPool threadPool(numOfHwCon);
+    ThreadPool threadPool(std::thread::hardware_concurrency());
 
     // At first, the work items queue is empty, so the Busy method
     // should return false
     bool expectedRes = false;
     EXPECT_EQ(expectedRes, threadPool.Busy());
+    EXPECT_EQ(0, threadPool.GetNumOfWorkItems());
+
+	LOG4CXX_INFO(rootLogger, "test ended successfully");
+}
+
+TEST(threadPoolTest, checkQueueJobItemFunction)
+{ 
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    ThreadPool threadPool(std::thread::hardware_concurrency());
+
+    // At first, the work items queue is empty, so the Busy method
+    // should return false
+    int workItem1 = 1;
+    int workItem2 = 2;
+    size_t numOfWorkItems = 0;
+    EXPECT_EQ(true, threadPool.QueueJobItem(workItem1));
+    ++numOfWorkItems;
+    EXPECT_EQ(true, threadPool.Busy());
+    EXPECT_EQ(numOfWorkItems, threadPool.GetNumOfWorkItems());
+
+    EXPECT_EQ(true, threadPool.QueueJobItem(workItem2));
+    ++numOfWorkItems;
+    EXPECT_EQ(true, threadPool.Busy());
+    EXPECT_EQ(numOfWorkItems, threadPool.GetNumOfWorkItems());
 
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }

@@ -27,9 +27,19 @@ void ThreadPool::Start()
 
 }
 
-void ThreadPool::QueueJobItem(const int num)
+bool ThreadPool::QueueJobItem(const int workItem)
 {
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "about to add item:" << workItem << " to the queue");
+    {
+        unique_lock<mutex> lock(m_queueMutex);
 
+        // TODO: should we check for maximum capacity???
+        m_jobsItems.emplace(workItem);
+    }
+
+    m_condVar.notify_one();
+    return true;
 }
 
 void ThreadPool::Stop()
@@ -46,6 +56,17 @@ bool ThreadPool::Busy()
     }
 
     return isPoolBusy;
+}
+
+size_t ThreadPool::GetNumOfWorkItems()
+{
+    size_t numOfWorkItems;
+    {
+        unique_lock<mutex> lock(m_queueMutex);
+        numOfWorkItems = m_jobsItems.size();
+    }
+
+    return numOfWorkItems;
 }
 
 size_t ThreadPool::GetNumOfThreads() const

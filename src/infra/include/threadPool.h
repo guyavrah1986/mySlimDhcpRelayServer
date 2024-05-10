@@ -17,10 +17,14 @@ public:
     ThreadPool(ThreadPool&& other) = delete;
     ThreadPool& operator=(const ThreadPool&& rhs) = delete;
     
+    // Public API
     void Start();
-    void QueueJobItem(const int num);
+    bool QueueJobItem(const int num);
     void Stop();
     bool Busy();
+
+    // Getters & setters
+    size_t GetNumOfWorkItems();
     size_t GetNumOfThreads() const;
     size_t GetThreadsCapacity() const;
 
