@@ -9,18 +9,20 @@
 class ThreadPool
 {
 public:
-    ThreadPool(const uint32_t numOfThreads);
+    explicit ThreadPool(const uint32_t numOfThreads);
     void Start();
     void QueueJobItem(const int num);
     void Stop();
     bool Busy();
+    size_t GetNumOfThreads() const;
+    size_t GetThreadsCapacity() const;
 
 private:
     void ThreadLoop();
 
-    bool m_should_terminate;                 // Tells threads to stop looking for jobs
-    std::mutex queue_mutex;                  // Prevents data races to the job queue
-    std::condition_variable mutex_condition; // Allows threads to wait on new jobs or termination 
+    bool m_shouldTerminate;                         // Tells threads to stop looking for jobs
+    std::mutex m_queueMutex;                        // Prevents data races to the job queue
+    std::condition_variable m_condVar;              // Allows threads to wait on new jobs or termination 
     std::vector<std::thread> m_workerThreadsVec;
     std::queue<int> jobsItems;
 };
