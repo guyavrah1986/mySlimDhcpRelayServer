@@ -14,7 +14,7 @@ TEST(threadPoolTest, createSingleThreadPoolWithValidNumOfThreads)
     LOG4CXX_INFO(rootLogger, "numOfHwCon is:" << numOfHwCon);
 	HeapLeakChecker heap_checker("test_threadPool");
     {
-        ThreadPool threadPool(numOfThreads);
+        ThreadPool<int> threadPool(numOfThreads);
         EXPECT_EQ(threadsCapacity, threadPool.GetThreadsCapacity());
         EXPECT_EQ(0, threadPool.GetNumOfThreads());
 
@@ -34,15 +34,15 @@ TEST(threadPoolTest, createThreadPoolWithInValidNumOfThreads)
 	auto rootLogger = log4cxx::Logger::getRootLogger();
     unsigned int numOfHwCon = std::thread::hardware_concurrency();
     LOG4CXX_INFO(rootLogger, "numOfHwCon is:" << numOfHwCon);
-    ThreadPool threadPool1(numOfHwCon + 1);
+    ThreadPool<int> threadPool1(numOfHwCon + 1);
     EXPECT_EQ(numOfHwCon, threadPool1.GetThreadsCapacity());
     EXPECT_EQ(0, threadPool1.GetNumOfThreads());
 
-    ThreadPool threadPool2(0);
+    ThreadPool<int> threadPool2(0);
     EXPECT_EQ(numOfHwCon, threadPool2.GetThreadsCapacity());
     EXPECT_EQ(0, threadPool2.GetNumOfThreads());
 
-    ThreadPool threadPool3(-1);
+    ThreadPool<int> threadPool3(-1);
     EXPECT_EQ(numOfHwCon, threadPool3.GetThreadsCapacity());
     EXPECT_EQ(0, threadPool3.GetNumOfThreads());
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
@@ -51,7 +51,7 @@ TEST(threadPoolTest, createThreadPoolWithInValidNumOfThreads)
 TEST(threadPoolTest, checkBusyFunction)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    ThreadPool threadPool(std::thread::hardware_concurrency());
+    ThreadPool<int> threadPool(std::thread::hardware_concurrency());
 
     // At first, the work items queue is empty, so the Busy method
     // should return false
@@ -62,22 +62,22 @@ TEST(threadPoolTest, checkBusyFunction)
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }
 
-TEST(threadPoolTest, checkQueueJobItemFunction)
+TEST(threadPoolTest, checkQueueWorkItemFunction)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    ThreadPool threadPool(std::thread::hardware_concurrency());
+    ThreadPool<int> threadPool(std::thread::hardware_concurrency());
 
     // At first, the work items queue is empty, so the Busy method
     // should return false
     int workItem1 = 1;
     int workItem2 = 2;
     size_t numOfWorkItems = 0;
-    EXPECT_EQ(true, threadPool.QueueJobItem(workItem1));
+    EXPECT_EQ(true, threadPool.QueueWorkItem(workItem1));
     ++numOfWorkItems;
     EXPECT_EQ(true, threadPool.Busy());
     EXPECT_EQ(numOfWorkItems, threadPool.GetNumOfWorkItems());
 
-    EXPECT_EQ(true, threadPool.QueueJobItem(workItem2));
+    EXPECT_EQ(true, threadPool.QueueWorkItem(workItem2));
     ++numOfWorkItems;
     EXPECT_EQ(true, threadPool.Busy());
     EXPECT_EQ(numOfWorkItems, threadPool.GetNumOfWorkItems());

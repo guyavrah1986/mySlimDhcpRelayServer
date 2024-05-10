@@ -6,10 +6,26 @@
 #include <thread>
 #include <vector>
 
-class ThreadPool
+
+template<typename T> class ThreadPool
 {
 public:
-    explicit ThreadPool(const uint32_t numOfThreads);
+    explicit ThreadPool(const uint32_t numOfThreads)
+    {
+        auto rootLogger = log4cxx::Logger::getRootLogger();
+        size_t sizeOfWorkerThreadsVector = numOfThreads;
+
+        // In case user provided 0 or number greater then the maximum possible
+        // set the HW concurrency maximum
+        if (0 == numOfThreads || std::thread::hardware_concurrency() < numOfThreads)
+        {
+            sizeOfWorkerThreadsVector = std::thread::hardware_concurrency();
+            LOG4CXX_DEBUG(rootLogger, "user wanted to have:" << numOfThreads
+                << ", but instead " << sizeOfWorkerThreadsVector << " threads were allocated");
+        }
+
+        m_workerThreadsVec.reserve(sizeOfWorkerThreadsVector);
+    }
 
     // Non copyable
     ThreadPool(const ThreadPool& other) = delete;
@@ -18,15 +34,66 @@ public:
     ThreadPool& operator=(const ThreadPool&& rhs) = delete;
     
     // Public API
-    void Start();
-    bool QueueJobItem(const int num);
-    void Stop();
-    bool Busy();
+    // ==========
+    void Start()
+    {
+
+    }
+
+    bool QueueWorkItem(const T& workItem)
+    {
+        auto rootLogger = log4cxx::Logger::getRootLogger();
+        LOG4CXX_INFO(rootLogger, "about to add item:" << workItem << " to the queue");
+        {
+            std::unique_lock<std::mutex> lock(m_queueMutex);
+
+            // TODO: should we check for maximum capacity???
+            m_jobsItems.emplace(workItem);
+        }
+
+        m_condVar.notify_one();
+        return true;
+    }
+
+    void Stop()
+    {
+
+    }
+
+    bool Busy()
+    {
+        bool isPoolBusy;
+        {
+            std::unique_lock<std::mutex> lock(m_queueMutex);
+            isPoolBusy = !m_jobsItems.empty();
+        }
+
+        return isPoolBusy;
+    }
 
     // Getters & setters
-    size_t GetNumOfWorkItems();
-    size_t GetNumOfThreads() const;
-    size_t GetThreadsCapacity() const;
+    // =================
+    size_t GetNumOfWorkItems()
+    {
+        size_t numOfWorkItems;
+        {
+            std::unique_lock<std::mutex> lock(m_queueMutex);
+            numOfWorkItems = m_jobsItems.size();
+        }
+
+        return numOfWorkItems;
+    }
+
+    size_t GetNumOfThreads() const
+    {
+        return m_workerThreadsVec.size();
+    }
+
+    size_t GetThreadsCapacity() const
+    {
+        return m_workerThreadsVec.capacity();
+    }
+
 
 private:
     void ThreadLoop();
@@ -36,5 +103,5 @@ private:
     std::vector<std::thread> m_workerThreadsVec;
     
     std::mutex m_queueMutex;                        // Prevents data races to the job queue
-    std::queue<int> m_jobsItems;
+    std::queue<T> m_jobsItems;
 };
