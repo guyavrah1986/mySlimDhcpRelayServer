@@ -28,8 +28,9 @@ private:
     void ThreadLoop();
 
     bool m_shouldTerminate;                         // Tells threads to stop looking for jobs
-    std::mutex m_queueMutex;                        // Prevents data races to the job queue
     std::condition_variable m_condVar;              // Allows threads to wait on new jobs or termination 
     std::vector<std::thread> m_workerThreadsVec;
-    std::queue<int> jobsItems;
+    
+    std::mutex m_queueMutex;                        // Prevents data races to the job queue
+    std::queue<int> m_jobsItems;
 };
