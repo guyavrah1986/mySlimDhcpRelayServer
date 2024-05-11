@@ -54,10 +54,10 @@ public:
         auto rootLogger = log4cxx::Logger::getRootLogger();
         LOG4CXX_INFO(rootLogger, "about to add item:" << workItem << " to the queue");
         {
-            std::unique_lock<std::mutex> lock(m_queueMutex);
+            std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
 
             // TODO: should we check for maximum capacity???
-            m_jobsItems.emplace(workItem);
+            m_workItems.emplace(workItem);
         }
 
         m_condVar.notify_one();
@@ -69,7 +69,7 @@ public:
         auto rootLogger = log4cxx::Logger::getRootLogger();
         LOG4CXX_INFO(rootLogger, "About to stop the thread pool");
         {
-            std::unique_lock<std::mutex> lock(m_queueMutex);
+            std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
             m_shouldTerminate = true;
         }
 
@@ -90,8 +90,8 @@ public:
     {
         bool isPoolBusy;
         {
-            std::unique_lock<std::mutex> lock(m_queueMutex);
-            isPoolBusy = !m_jobsItems.empty();
+            std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
+            isPoolBusy = !m_workItems.empty();
         }
 
         return isPoolBusy;
@@ -103,8 +103,8 @@ public:
     {
         size_t numOfWorkItems;
         {
-            std::unique_lock<std::mutex> lock(m_queueMutex);
-            numOfWorkItems = m_jobsItems.size();
+            std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
+            numOfWorkItems = m_workItems.size();
         }
 
         return numOfWorkItems;
@@ -121,7 +121,7 @@ public:
     }
 
 private:
-    void ThreadLoop()
+    void workerThreadLoop()
     {
 
     }
@@ -130,7 +130,7 @@ private:
     std::condition_variable m_condVar;              // Allows threads to wait on new jobs or termination 
     std::vector<std::thread> m_workerThreadsVec;
     
-    std::mutex m_queueMutex;                        // Prevents data races to the job queue
-    std::queue<T> m_jobsItems;
+    std::mutex m_workItemQueueMutex;                // Prevents data races to the job queue
+    std::queue<T> m_workItems;
     std::function<void(T)> m_workerThreadFunc;      // Points to the common worker threads function
 };
