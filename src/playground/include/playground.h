@@ -15,6 +15,8 @@ int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv);
 
 int setThreadPriorityExample(int argc, char** argv);
 
+int threadPoolUsageExample(int argc, char** argv);
+
 // Utilities functions
 // ===================
 void workerThreadFunc1(int num);

@@ -27,6 +27,7 @@ int runPlaygroundFunc(int argc, char** argv)
     // Add functions to the dictionary
     // -------------------------------
     funcDict["cpp11ThreadExample"] = &cpp11StdThreadExample;
+    funcDict["threadPoolUsageExample"] = &threadPoolUsageExample;
     funcDict["setThreadPriorityExample"] = &setThreadPriorityExample;
     funcDict["cpp11StdThreadWrapperExample"] = &cpp11StdThreadWrapperExample;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
@@ -191,7 +192,12 @@ int setThreadPriorityExample(int argc, char** argv)
     return 0;
 }
 
-
+int threadPoolUsageExample(int argc, char** argv)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "start");
+    return 0;
+}
 
 // ===================
 // Utilities functions:
