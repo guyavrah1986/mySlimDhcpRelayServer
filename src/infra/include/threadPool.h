@@ -57,7 +57,14 @@ public:
             std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
 
             // TODO: should we check for maximum capacity???
-            m_workItems.emplace(workItem);
+            if (false == m_shouldTerminate)
+            {
+                m_workItems.emplace(workItem);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         m_condVar.notify_one();

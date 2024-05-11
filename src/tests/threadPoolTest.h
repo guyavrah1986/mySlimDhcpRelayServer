@@ -54,7 +54,7 @@ TEST(threadPoolTest, createThreadPoolWithInValidNumOfThreads)
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }
 
-TEST(threadPoolTest, checkBusyFunction)
+TEST(threadPoolTest, checkBusyFunctionWhenPoolIsNotBusy)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
     ThreadPool<int> threadPool(std::thread::hardware_concurrency(), workerFuncSample<int>);
@@ -176,7 +176,7 @@ TEST(threadPoolTest, createThreadPoolWithTwoThreadsAddWorkItemAndStopThemAfterSo
         EXPECT_EQ(numOfThreads, threadPool.GetNumOfThreads());
 
         // Add one work item
-        threadPool.QueueWorkItem(17);
+        EXPECT_EQ(true, threadPool.QueueWorkItem(17));
         // Note: It is not possible to test here the size of the work item queue
         // because by the time we reach here, the work item might be "poped-out"
         // from the queue
@@ -203,4 +203,27 @@ TEST(threadPoolTest, addWorkItemBeforeAndAfterThreadPoolIsStarted)
     int workItem2 = 2;
     EXPECT_EQ(true, threadPool.QueueWorkItem(workItem2));
     threadPool.Stop();
+}
+
+TEST(threadPoolTest, addWorkItemAfterThreadPoolIsStopped)
+{ 
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    HeapLeakChecker heap_checker("test_threadPool");
+    {
+        ThreadPool<int> threadPool(std::thread::hardware_concurrency(), workerFuncSample<int>);
+        // At first, the work items queue is empty, so the Busy method
+        // should return false
+
+        LOG4CXX_INFO(rootLogger, "about to START the thread pool");
+        threadPool.Start();
+
+        LOG4CXX_INFO(rootLogger, "about to STOP the thread pool");
+        threadPool.Stop();
+
+        LOG4CXX_INFO(rootLogger, "about to add work item to the thread pool");
+
+        int workItem1 = 1;
+        EXPECT_EQ(false, threadPool.QueueWorkItem(workItem1));
+    }
+    if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 }
