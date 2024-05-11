@@ -132,3 +132,26 @@ TEST(threadPoolTest, checkStartAndStopFunctions)
 
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }
+
+TEST(threadPoolTest, createThreadPoolWithTwoThreadsAndStopThemAfterSometime)
+{ 
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    size_t numOfThreads = 2;
+    HeapLeakChecker heap_checker("test_threadPool");
+    {
+        ThreadPool<int> threadPool(numOfThreads, workerFuncSample<int>);
+
+        // At first, the work items queue is empty, so the Busy method
+        // should return false
+        bool expectedRes = false;
+        EXPECT_EQ(expectedRes, threadPool.Busy());
+        EXPECT_EQ(0, threadPool.GetNumOfWorkItems());
+
+        // Start the pool
+        threadPool.Start();
+        EXPECT_EQ(numOfThreads, threadPool.GetThreadsCapacity());
+        EXPECT_EQ(numOfThreads, threadPool.GetNumOfThreads());
+        threadPool.Stop();
+    } 
+    if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
+}

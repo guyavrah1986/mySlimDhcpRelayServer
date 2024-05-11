@@ -124,7 +124,7 @@ private:
     void workerThreadLoop()
     {
         auto rootLogger = log4cxx::Logger::getRootLogger();
-        LOG4CXX_INFO(rootLogger, "about to start infine loop for thread:");// << std::thread::get_id());
+        LOG4CXX_INFO(rootLogger, "about to start infine loop for thread:");
         while (true)
         {
             T workItem;
@@ -136,7 +136,7 @@ private:
 
                 if (true == m_shouldTerminate)
                 {
-                    LOG4CXX_WARN(rootLogger, "terminating infine loop for thread:"); // << std::thread::get_id());
+                    LOG4CXX_WARN(rootLogger, "terminating infine loop for thread:");
                     return;
                 }
 
@@ -145,7 +145,7 @@ private:
                 m_workItems.pop();   
             }
 
-            LOG4CXX_INFO(rootLogger, "invoking the worker thread function for thread:");// << std::thread::get_id());
+            LOG4CXX_INFO(rootLogger, "invoking the worker thread function for thread:");
             m_workerThreadFunc(workItem);
         }
     }
