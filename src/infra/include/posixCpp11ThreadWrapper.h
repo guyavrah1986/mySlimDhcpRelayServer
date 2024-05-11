@@ -6,6 +6,8 @@
 // 
 // ============================================================================
 // ============================================================================
+#pragma once
+
 #include "cpp11ThreadWrapper.h"
 
 class PosixCpp11ThreadWrapper : public Cpp11ThreadWrapper
