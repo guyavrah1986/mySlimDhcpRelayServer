@@ -6,7 +6,6 @@
 #include <thread>
 #include <vector>
 
-
 template<typename T> class ThreadPool
 {
 public:
@@ -36,8 +35,15 @@ public:
     // Public API
     // ==========
     void Start()
-    {
+    {   
+        auto rootLogger = log4cxx::Logger::getRootLogger();
+        size_t numOfThreads = this->GetThreadsCapacity();
+        for (uint32_t i = 0; i < numOfThreads; ++i)
+        {
+            m_workerThreadsVec.emplace_back(std::thread(&ThreadPool::ThreadLoop, this));
+        }
 
+        LOG4CXX_INFO(rootLogger, "Created " << numOfThreads << " worker threads");
     }
 
     bool QueueWorkItem(const T& workItem)
@@ -57,7 +63,24 @@ public:
 
     void Stop()
     {
+        auto rootLogger = log4cxx::Logger::getRootLogger();
+        LOG4CXX_INFO(rootLogger, "About to stop the thread pool");
+        {
+            std::unique_lock<std::mutex> lock(m_queueMutex);
+            m_shouldTerminate = true;
+        }
 
+        m_condVar.notify_all();
+
+        // Before terminating we must join all threads so that when the 
+        // destructor gets called, the they will be un-joinable
+        // TODO: when using the wrapperThread class this is probably not needed...
+        for (std::thread& workerThread : m_workerThreadsVec)
+        {
+            workerThread.join();
+        }
+
+        m_workerThreadsVec.clear();
     }
 
     bool Busy()
@@ -94,9 +117,11 @@ public:
         return m_workerThreadsVec.capacity();
     }
 
-
 private:
-    void ThreadLoop();
+    void ThreadLoop()
+    {
+
+    }
 
     bool m_shouldTerminate;                         // Tells threads to stop looking for jobs
     std::condition_variable m_condVar;              // Allows threads to wait on new jobs or termination 
