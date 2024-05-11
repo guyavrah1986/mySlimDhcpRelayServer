@@ -185,3 +185,22 @@ TEST(threadPoolTest, createThreadPoolWithTwoThreadsAddWorkItemAndStopThemAfterSo
     } 
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 }
+
+TEST(threadPoolTest, addWorkItemBeforeAndAfterThreadPoolIsStarted)
+{ 
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    ThreadPool<int> threadPool(std::thread::hardware_concurrency(), workerFuncSample<int>);
+    size_t numOfWorkItems = 0;
+    // At first, the work items queue is empty, so the Busy method
+    // should return false
+    int workItem1 = 1;
+    EXPECT_EQ(true, threadPool.QueueWorkItem(workItem1));
+    ++numOfWorkItems;
+    EXPECT_EQ(true, threadPool.Busy());
+    EXPECT_EQ(numOfWorkItems, threadPool.GetNumOfWorkItems());
+
+    threadPool.Start();
+    int workItem2 = 2;
+    EXPECT_EQ(true, threadPool.QueueWorkItem(workItem2));
+    threadPool.Stop();
+}
