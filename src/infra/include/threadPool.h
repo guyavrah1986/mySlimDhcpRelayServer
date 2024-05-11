@@ -1,6 +1,7 @@
 #pragma once
 
 #include <condition_variable>
+#include <functional>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -9,7 +10,9 @@
 template<typename T> class ThreadPool
 {
 public:
-    explicit ThreadPool(const uint32_t numOfThreads)
+    explicit ThreadPool(const uint32_t numOfThreads, std::function<void(T)> workerThreadFunc)
+        : m_shouldTerminate(false),
+        m_workerThreadFunc(workerThreadFunc)
     {
         auto rootLogger = log4cxx::Logger::getRootLogger();
         size_t sizeOfWorkerThreadsVector = numOfThreads;
@@ -19,7 +22,7 @@ public:
         if (0 == numOfThreads || std::thread::hardware_concurrency() < numOfThreads)
         {
             sizeOfWorkerThreadsVector = std::thread::hardware_concurrency();
-            LOG4CXX_DEBUG(rootLogger, "user wanted to have:" << numOfThreads
+            LOG4CXX_WARN(rootLogger, "user wanted to have:" << numOfThreads
                 << ", but instead " << sizeOfWorkerThreadsVector << " threads were allocated");
         }
 
@@ -93,7 +96,7 @@ public:
 
         return isPoolBusy;
     }
-
+    
     // Getters & setters
     // =================
     size_t GetNumOfWorkItems()
@@ -129,4 +132,5 @@ private:
     
     std::mutex m_queueMutex;                        // Prevents data races to the job queue
     std::queue<T> m_jobsItems;
+    std::function<void(T)> m_workerThreadFunc;      // Points to the common worker threads function
 };
