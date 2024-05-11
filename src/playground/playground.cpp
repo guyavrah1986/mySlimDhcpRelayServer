@@ -18,7 +18,8 @@ using namespace std;
 int runPlaygroundFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "about to run some public function");
+    LOG4CXX_INFO(rootLogger, "about to run some public function, got:" << argc
+        << " command line arguments");
 
     // initialize the dictionary of functions:
     typedef int (*funcPointer)(int, char**);
@@ -50,26 +51,37 @@ int runPlaygroundFunc(int argc, char** argv)
 
 int cpp11StdThreadExample(int argc, char** argv)
 {
-    string funcName = "cpp11ThreadExample - ";
-    cout << funcName + "START" << endl;
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
 
     // create a new thread and assgin it some work to do
     int num = 15;
-    cout << funcName + "initially, num is:" << num << endl;
+    LOG4CXX_INFO(rootLogger, "initially, num is:" << num);
     thread t1(&workerThreadFunc1, ref(num));
 
     // wait for the worker thread to finish
-    cout << funcName + "waiting for worker thread to terminate" << endl;
+    LOG4CXX_INFO(rootLogger, "waiting for worker thread to terminate");
     t1.join();
-    cout << funcName + "after worker thread is done waiting, num is:" << num << endl;
-    cout << funcName + "END" << endl;
+    LOG4CXX_INFO(rootLogger,"after worker thread is done waiting, num is:" << num);
     return 0;
 }
 
 int cpp11StdThreadWrapperExample(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
     LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
+
     PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(cpp11StdThreadWrapperSampleFunc, 1)), &thread::join);
     LOG4CXX_INFO(rootLogger, "end of std::thread wrapper usage example");
     return 0;
@@ -79,6 +91,13 @@ int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
+
     PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(runLoopFunc)), &thread::join);
     LOG4CXX_INFO(rootLogger, "created and started the POSIX thread wrapper");
     int priorityToSet = 5;
@@ -99,6 +118,12 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start");
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
     int socket_desc, client_sock, c;
     struct sockaddr_in server, client;
 
@@ -174,6 +199,12 @@ int setThreadPriorityExample(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start");
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
 
     thread t1(f, 1), t2(f, 2);
     sched_param sch;
@@ -196,6 +227,12 @@ int threadPoolUsageExample(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "start");
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
     return 0;
 }
 

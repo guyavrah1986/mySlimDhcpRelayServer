@@ -18,7 +18,7 @@ message(STATUS "The root folder of the project is:${PROJECT_SOURCE_DIR}")
 
 # Add the following compilation settings (flags) globally to ALL targets
 # in this project
-add_compile_options(-Wall -Werror)
+add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 include_directories(src)
 
