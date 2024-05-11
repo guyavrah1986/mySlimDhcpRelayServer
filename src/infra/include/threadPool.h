@@ -43,7 +43,7 @@ public:
         size_t numOfThreads = this->GetThreadsCapacity();
         for (uint32_t i = 0; i < numOfThreads; ++i)
         {
-            m_workerThreadsVec.emplace_back(std::thread(&ThreadPool::ThreadLoop, this));
+            m_workerThreadsVec.emplace_back(std::thread(&ThreadPool::workerThreadLoop, this));
         }
 
         LOG4CXX_INFO(rootLogger, "Created " << numOfThreads << " worker threads");
@@ -123,7 +123,31 @@ public:
 private:
     void workerThreadLoop()
     {
+        auto rootLogger = log4cxx::Logger::getRootLogger();
+        LOG4CXX_INFO(rootLogger, "about to start infine loop for thread:");// << std::thread::get_id());
+        while (true)
+        {
+            T workItem;
+            {
+                std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
+                m_condVar.wait(lock, [this] {
+                    return !m_workItems.empty() || m_shouldTerminate;
+                });
 
+                if (true == m_shouldTerminate)
+                {
+                    LOG4CXX_WARN(rootLogger, "terminating infine loop for thread:"); // << std::thread::get_id());
+                    return;
+                }
+
+                // Extract the next work item from the queue
+                workItem = m_workItems.front();
+                m_workItems.pop();   
+            }
+
+            LOG4CXX_INFO(rootLogger, "invoking the worker thread function for thread:");// << std::thread::get_id());
+            m_workerThreadFunc(workItem);
+        }
     }
 
     bool m_shouldTerminate;                         // Tells threads to stop looking for jobs
