@@ -31,12 +31,20 @@ public:
 
 	Cpp11ThreadWrapper(std::thread&& t, RAIIAction action);
 	virtual ~Cpp11ThreadWrapper();
-	std::thread& GetThread();
 
-	// abstract interface
+	// Copy semantics - disabled
+    Cpp11ThreadWrapper(const Cpp11ThreadWrapper& other) = delete;
+	Cpp11ThreadWrapper& operator=(const Cpp11ThreadWrapper& rhs) = delete;
+
+	// Move semantics 
+    Cpp11ThreadWrapper(Cpp11ThreadWrapper&& other) noexcept;
+    Cpp11ThreadWrapper& operator=(Cpp11ThreadWrapper&& other) noexcept;
+
+	// Abstract interface
 	virtual bool SetScheduling(int priority, int policy = SCHED_OTHER) = 0;
 
-	// getters and setters
+	// Getters and setters
+	std::thread& GetThread();
 	size_t GetThreadId() const { return this->m_threadId; }
 
 protected:
