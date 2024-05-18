@@ -7,6 +7,8 @@
 #include <thread>
 #include <vector>
 
+#include "posixCpp11ThreadWrapper.h"
+
 template<typename T> class ThreadPool
 {
 public:
@@ -29,7 +31,7 @@ public:
         m_workerThreadsVec.reserve(sizeOfWorkerThreadsVector);
     }
 
-    // Non copyable
+    // Non copyable and non movable
     ThreadPool(const ThreadPool& other) = delete;
     ThreadPool& operator=(const ThreadPool& rhs) = delete;
     ThreadPool(ThreadPool&& other) = delete;
@@ -43,7 +45,7 @@ public:
         size_t numOfThreads = this->GetThreadsCapacity();
         for (uint32_t i = 0; i < numOfThreads; ++i)
         {
-            m_workerThreadsVec.emplace_back(std::thread(&ThreadPool::workerThreadLoop, this));
+            m_workerThreadsVec.emplace_back(PosixCpp11ThreadWrapper(std::move(std::thread(&ThreadPool::workerThreadLoop, this)), &std::thread::join));
         }
 
         LOG4CXX_INFO(rootLogger, "Created " << numOfThreads << " worker threads");
@@ -85,10 +87,12 @@ public:
         // Before terminating we must join all threads so that when the 
         // destructor gets called, the they will be un-joinable
         // TODO: when using the wrapperThread class this is probably not needed...
+        /*
         for (std::thread& workerThread : m_workerThreadsVec)
         {
             workerThread.join();
         }
+        */
 
         m_workerThreadsVec.clear();
     }
@@ -159,7 +163,7 @@ private:
 
     bool m_shouldTerminate;                         // Tells threads to stop looking for jobs
     std::condition_variable m_condVar;              // Allows threads to wait on new jobs or termination 
-    std::vector<std::thread> m_workerThreadsVec;
+    std::vector<PosixCpp11ThreadWrapper> m_workerThreadsVec;
     
     std::mutex m_workItemQueueMutex;                // Prevents data races to the job queue
     std::queue<T> m_workItems;

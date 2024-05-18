@@ -28,7 +28,7 @@ TEST(threadPoolTest, createSingleThreadPoolWithValidNumOfThreads)
         // ThreadPool tp(threadPool);
         // ThreadPool tp(std::move(threadPool));
         // ThreadPool tp = threadPool;
-        // ThreadPool tp(std::move(threadPool));
+        // ThreadPool tp = std::move(threadPool);
     }
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 
@@ -64,7 +64,6 @@ TEST(threadPoolTest, checkBusyFunctionWhenPoolIsNotBusy)
     bool expectedRes = false;
     EXPECT_EQ(expectedRes, threadPool.Busy());
     EXPECT_EQ(0, threadPool.GetNumOfWorkItems());
-
 	LOG4CXX_INFO(rootLogger, "test ended successfully");
 }
 
@@ -211,8 +210,6 @@ TEST(threadPoolTest, addWorkItemAfterThreadPoolIsStopped)
     HeapLeakChecker heap_checker("test_threadPool");
     {
         ThreadPool<int> threadPool(std::thread::hardware_concurrency(), workerFuncSample<int>);
-        // At first, the work items queue is empty, so the Busy method
-        // should return false
 
         LOG4CXX_INFO(rootLogger, "about to START the thread pool");
         threadPool.Start();
