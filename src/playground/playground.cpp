@@ -1,17 +1,16 @@
 #include <arpa/inet.h>
 #include <chrono>
 #include <cstring>      // for stderror()
-#include <iostream>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/logger.h>
 #include <stdint.h>
 #include <sys/socket.h>
-#include <thread>
 #include <unordered_map>
 #include <unistd.h>
 
 #include "include/playground.h"
 #include "../infra/include/posixCpp11ThreadWrapper.h"
+#include "../infra/include/threadPool.h"
 
 using namespace std;
 
@@ -214,7 +213,6 @@ int setThreadPriorityExample(int argc, char** argv)
     if (pthread_setschedparam(t1.native_handle(), SCHED_FIFO, &sch))
     {
         LOG4CXX_ERROR(rootLogger, "Failed to setschedparam: " << strerror(errno));
-        cout << "Failed to setschedparam: " << strerror(errno) << endl;
         return 1;
     }
  
@@ -233,6 +231,17 @@ int threadPoolUsageExample(int argc, char** argv)
         LOG4CXX_ERROR(rootLogger, "got null pointer");
         return -1;
     }
+
+    ThreadPool<int> threadPool(2, workerThreadFunc1);
+    threadPool.Start();
+    int workItem = 1;
+    if (false == threadPool.QueueWorkItem(workItem))
+    {
+        LOG4CXX_ERROR(rootLogger, "was unable to add work item:" << workItem << ", aborting");
+        return -1;
+    }
+
+    LOG4CXX_INFO(rootLogger, "started the pool");
     return 0;
 }
 
@@ -244,14 +253,14 @@ void workerThreadFunc1(int num)
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "START of handler function, the socket got is:" << num);
     size_t threadId = hash<thread::id>{}(this_thread::get_id());
-    LOG4CXX_INFO(rootLogger, "the thread ID is:" << threadId);
+    LOG4CXX_INFO(rootLogger, "thread ID is:" << threadId << " got num:" << num);
 
     // For debug, write the socket value allocated to this request
     // back to the client:
-    string msgToClient = "The socket number allocated was:" + num;
+    //string msgToClient = "The socket number allocated was:" + num;
 
-    size_t msgLen = msgToClient.length();
-    write(num, msgToClient.c_str(), msgLen);
+    //size_t msgLen = msgToClient.length();
+    //write(num, msgToClient.c_str(), msgLen);
     LOG4CXX_INFO(rootLogger, "END of handler function");
 }
 
@@ -284,6 +293,8 @@ void f(int num)
     int policy; 
     pthread_getschedparam(pthread_self(), &policy, &sch);
     lock_guard<mutex> lk(iomutex);
-    cout << "Thread " << num << " is executing at priority "
-              << sch.sched_priority << '\n';
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "Thread " << num << " is executing at priority:" 
+                << sch.sched_priority);
+
 }
