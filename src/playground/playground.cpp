@@ -1,6 +1,7 @@
 #include <arpa/inet.h>
 #include <chrono>
 #include <cstring>      // for stderror()
+# include <iostream>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/logger.h>
 #include <stdint.h>
@@ -235,13 +236,50 @@ int threadPoolUsageExample(int argc, char** argv)
     ThreadPool<int> threadPool(2, workerThreadFunc1);
     threadPool.Start();
     int workItem = 1;
+    LOG4CXX_INFO(rootLogger, "about to add work item to the thread pool's queue");
     if (false == threadPool.QueueWorkItem(workItem))
     {
         LOG4CXX_ERROR(rootLogger, "was unable to add work item:" << workItem << ", aborting");
         return -1;
     }
 
-    LOG4CXX_INFO(rootLogger, "started the pool");
+    LOG4CXX_INFO(rootLogger, "started the pool and added single work item");
+    workItem = 0;
+    while (true)
+    {
+        LOG4CXX_INFO(rootLogger, "please enter your choice: 1 - add work item, 2 - terminate program");
+        int input;
+        cin >> input;
+        switch (input)
+        {
+            case 1:
+            {
+                if (false == threadPool.QueueWorkItem(++workItem))
+                {
+                    threadPool.Stop();
+                    LOG4CXX_ERROR(rootLogger, "was unable to add work item:" << workItem << ", aborting");
+                    return -1;  
+                }
+                else
+                {
+                    LOG4CXX_INFO(rootLogger, "added work item:" << workItem);
+                }
+                break;
+            }
+            case 2:
+            {
+                LOG4CXX_INFO(rootLogger, "terminating program");
+                threadPool.Stop();
+                return 0;  
+            }
+            default:
+            {
+                LOG4CXX_INFO(rootLogger, "please insert 1 or 2");
+                break;
+            }
+        }
+    }
+
     return 0;
 }
 
