@@ -5,7 +5,6 @@ LABEL Description="Build environment"
 
 SHELL ["/bin/bash", "-c"]
 
-# -y --no-install-recommends
 RUN apt-get update && apt-get -y --no-install-recommends install \
     build-essential \
     cmake \
