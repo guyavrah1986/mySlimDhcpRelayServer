@@ -24,31 +24,70 @@
 
 #include <thread>
 
-class Cpp11ThreadWrapper
+template <typename T> class Cpp11ThreadWrapper
 {
 public:
 	typedef void (std::thread::*RAIIAction)();
 
-	Cpp11ThreadWrapper(std::thread&& t, RAIIAction action);
-	virtual ~Cpp11ThreadWrapper();
+	Cpp11ThreadWrapper(std::thread&& t, RAIIAction action)
+		: m_thread(std::move(t))
+		, m_actionUponDestruction(action)
+	{
+		
+	}
+
+	virtual ~Cpp11ThreadWrapper()
+	{
+		if (true == m_thread.joinable() && nullptr != m_actionUponDestruction)
+		{
+			(m_thread.*m_actionUponDestruction)();
+		}
+	}
 
 	// Copy semantics - disabled
+	// =========================
     Cpp11ThreadWrapper(const Cpp11ThreadWrapper& other) = delete;
 	Cpp11ThreadWrapper& operator=(const Cpp11ThreadWrapper& rhs) = delete;
 
 	// Move semantics 
-    Cpp11ThreadWrapper(Cpp11ThreadWrapper&& other) noexcept;
-    Cpp11ThreadWrapper& operator=(Cpp11ThreadWrapper&& other) noexcept;
+	// ==============
+    Cpp11ThreadWrapper(Cpp11ThreadWrapper&& other) noexcept
+		: m_actionUponDestruction(move(other.m_actionUponDestruction))
+	{
 
-	// Abstract interface
-	virtual bool SetScheduling(int priority, int policy = SCHED_OTHER) = 0;
+	}
+	
+	Cpp11ThreadWrapper& operator=(Cpp11ThreadWrapper&& other) noexcept
+	{
+		if (this == &other)
+		{
+			return *this;
+		}
+
+		//this->m_threadId = other.m_threadId;
+		this->m_thread = move(other.m_thread);
+		this->m_actionUponDestruction = move(m_actionUponDestruction);
+
+		//other.m_threadId = 0;
+		other.m_actionUponDestruction = nullptr;
+		return *this;
+	}
 
 	// Getters and setters
-	std::thread& GetThread();
-	size_t GetThreadId() const { return this->m_threadId; }
+	// ===================
+	std::thread& GetThread()
+	{
+		return m_thread;
+	}
+
+	// Abstract interface
+	// ==================
+	virtual bool SetScheduling(int priority, int policy = SCHED_OTHER) = 0;
+	virtual bool SetAffinity(int cpuNum = -1) = 0;
+	virtual T GetThreadId() const = 0;
 
 protected:
-	size_t m_threadId;
+	T m_threadId;
 
 private:
 	std::thread m_thread;
