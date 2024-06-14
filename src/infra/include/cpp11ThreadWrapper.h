@@ -92,7 +92,18 @@ public:
 	// Abstract interface
 	// ==================
 	virtual bool SetScheduling(int priority, int policy = SCHED_OTHER) = 0;
-	virtual bool SetAffinity(int cpuNum = -1) = 0;
+	virtual bool SetAffinity(unsigned int cpuNum) = 0;
+
+protected:
+	bool IsValidCpuNum(unsigned int cpuNum) const
+	{
+		if (cpuNum > std::thread::hardware_concurrency())
+		{
+			return false;
+		}
+
+		return true;
+	}
 
 private:
 	std::thread m_thread;

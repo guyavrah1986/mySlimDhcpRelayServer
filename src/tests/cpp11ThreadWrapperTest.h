@@ -38,3 +38,22 @@ TEST(posixCpp11ThreadWrapperTest, createSingleThreadMoveIntoVectorAndThenRunTill
 	LOG4CXX_INFO(rootLogger, "thread ran its function and was joined successfully");
 }
 
+TEST(posixCpp11ThreadWrapperTest, setCpuCoreNumberForAffinity)
+{ 
+	auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper run its function and join it");
+	HeapLeakChecker heap_checker("test_posixCpp11ThreadWrapper");
+    {
+		PosixCpp11ThreadWrapper sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);
+		unsigned int numOfCpuLogicalCores = std::thread::hardware_concurrency();
+		LOG4CXX_INFO(rootLogger, "there are " << numOfCpuLogicalCores << " logical CPU cores");
+		unsigned int numCoreToSet = numOfCpuLogicalCores + 1;
+		EXPECT_EQ(false, sampleWrappedThread.SetAffinity(numCoreToSet));
+		numCoreToSet = numOfCpuLogicalCores - 1;
+		EXPECT_EQ(true, sampleWrappedThread.SetAffinity(numCoreToSet));
+    }
+    if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
+
+
+	LOG4CXX_INFO(rootLogger, "thread ran its function and was joined successfully");
+}

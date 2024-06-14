@@ -23,11 +23,15 @@ public:
 
     // Abstract interface - implementation
 	// ===================================
-    bool SetAffinity(int cpuNum = -1) override
+    bool SetAffinity(unsigned int cpuNum) override
     {   
-        // TODO: implement validation of the argument
-        // in the base class!
         auto rootLogger = log4cxx::Logger::getRootLogger();
+        if (false == IsValidCpuNum(cpuNum))
+        {
+            LOG4CXX_ERROR(rootLogger, "got an invlid CPU num");
+            return false;
+        }
+
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
         CPU_SET(cpuNum, &cpuset);
