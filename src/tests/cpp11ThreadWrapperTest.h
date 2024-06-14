@@ -46,7 +46,6 @@ TEST(posixCpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletionJoin)
 	LOG4CXX_INFO(rootLogger, "thread ran its function and was joined successfully");
 }
 
-
 TEST(posixCpp11ThreadWrapperTest, createSingleThreadMoveItThenRunTillCompletionJoin)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();

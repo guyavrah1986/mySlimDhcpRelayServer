@@ -31,6 +31,11 @@ C++ based multi threaded slim HTTP server
 - Run unit test with tcmalloc's heap leak detection enabled: 
 - `build$ env HEAPCHECK=local src/tests/unitTestsExe.out <full_path_to_logger_configuration_file> --gtest_filter=sampleObjectTest.createSingleMySampleObject`
 
+# Run playground function (for exploring/testing purposes):
+- The project needs to be sucessfully built with the `-DBUILD_UNIT_TESTS=True`  (same as for building unit tests).
+- Run the following (from the `build` folder): `./src/myHttpServer.out <full_path_to_logger_configuration_file> -p <name_of_function_to_run`, for example: 
+- `./src/myHttpServer.out ../appLogging.properties -p setThreadCpuAffinityExample` (to run the `setThreadCpuAffinityExample` playground function).
+
 # Generating unit test covrage: 
 - Run the unit tests (as described above)
 - From the `build` folder run: `lcov –c –d . –o testsCovrage.info`
