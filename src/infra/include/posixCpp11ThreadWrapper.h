@@ -10,27 +10,31 @@
 
 #include "cpp11ThreadWrapper.h"
 
-template <typename T>
-class PosixCpp11ThreadWrapper : public Cpp11ThreadWrapper<T>
+class PosixCpp11ThreadWrapper : public Cpp11ThreadWrapper
 {
 public:
-    PosixCpp11ThreadWrapper(std::thread&& t, Cpp11ThreadWrapper<T>::RAIIAction action) 
-        : Cpp11ThreadWrapper<T>(std::move(t), action)
+    PosixCpp11ThreadWrapper(std::thread&& t, Cpp11ThreadWrapper::RAIIAction action) 
+        : Cpp11ThreadWrapper(std::move(t), action)
     {
 
     }
 
     // Abstract interface - implementation
 	// ===================================
-    T GetThreadId() const override
-    {
-        return this->m_threadId;
-    }
-
     bool SetAffinity(int cpuNum = -1) override
-    {
-        if (-1 == cpuNum)
+    {   
+        // TODO: implement validation of the argument
+        // in the base class!
+        auto rootLogger = log4cxx::Logger::getRootLogger();
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        CPU_SET(cpuNum, &cpuset);
+        int retCode = pthread_setaffinity_np(this->GetThread().native_handle(),
+                                        sizeof(cpu_set_t), &cpuset);
+        if (0 != retCode)
         {
+            LOG4CXX_ERROR(rootLogger, "got error return code:" << retCode 
+                << " and was unable to set thread's affinity");
             return false;
         }
 
@@ -50,12 +54,4 @@ public:
 
         return false;
     }
-
-    /*
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(i, &cpuset);
-    int rc = pthread_setaffinity_np(threads[i].native_handle(),
-                                    sizeof(cpu_set_t), &cpuset);
-    */
 };

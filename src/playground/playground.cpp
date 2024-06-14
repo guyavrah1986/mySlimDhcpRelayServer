@@ -91,7 +91,7 @@ int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
         return -1;
     }
 
-    PosixCpp11ThreadWrapper<pthread_t> sampleWrappedThread(std::move(thread(runLoopFunc)), &thread::join);
+    PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(runLoopFunc)), &thread::join);
     LOG4CXX_INFO(rootLogger, "created and started the POSIX thread wrapper");
     int priorityToSet = 5;
     bool ret = sampleWrappedThread.SetScheduling(priorityToSet, SCHED_OTHER);
@@ -102,7 +102,7 @@ int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
     }
 
     LOG4CXX_INFO(rootLogger, "changed its priority to:" << priorityToSet);
-    pthread_t workerThreadId = sampleWrappedThread.GetThreadId();
+    pthread_t workerThreadId = sampleWrappedThread.GetThread().native_handle();
     LOG4CXX_INFO(rootLogger, "check the priority of thread:" << workerThreadId);
     return 0;
 }
@@ -231,9 +231,19 @@ int setThreadCpuAffinityExample(int argc, char** argv)
     LOG4CXX_INFO(rootLogger, "machine has:" << numCores << " cores");
 
     size_t desiredCpuNum = 1;
-    PosixCpp11ThreadWrapper<pthread_t> myThread(move(thread(dummyLoopFunc, desiredCpuNum)), &thread::join);
-    pthread_t threadId = myThread.GetThreadId();
-    LOG4CXX_INFO(rootLogger, "successfully set thread" << threadId << " on CPU:" << desiredCpuNum);
+    PosixCpp11ThreadWrapper myThread(move(thread(dummyLoopFunc, desiredCpuNum)), &thread::join);
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(desiredCpuNum, &cpuset);
+    int rc = pthread_setaffinity_np(myThread.GetThread().native_handle(),
+                                    sizeof(cpu_set_t), &cpuset);
+    if (0 != rc)
+    {
+        LOG4CXX_ERROR(rootLogger, "was unable to set thread affinity, aborting");
+        return -1;
+    }
+
+    LOG4CXX_INFO(rootLogger, "successfully set thread" << myThread.GetThread().native_handle() << " on CPU:" << desiredCpuNum);
     return 0;
 }
 
@@ -356,39 +366,14 @@ void dummyLoopFunc(size_t desiredCpuNum)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     pthread_t threadId = hash<thread::id>{}(this_thread::get_id());
-    LOG4CXX_INFO(rootLogger, "got thread ID:" << threadId << ", which is desired to be ran on CPU:" << desiredCpuNum);
-    cpu_set_t cpuSet;
-    CPU_ZERO(&cpuSet);
-    CPU_SET(desiredCpuNum, &cpuSet);
-    LOG4CXX_INFO(rootLogger, "about to set threadId:" << threadId << ", to run on CPU:" << desiredCpuNum);
-    int result = pthread_setaffinity_np(threadId, sizeof(cpuSet), &cpuSet);
-    if (0 != result)
-    {
-        LOG4CXX_ERROR(rootLogger, "was unable to set affinity for thread"
-            << threadId << " on CPU:" << desiredCpuNum);
-        return;
-    }
-
-    LOG4CXX_INFO(rootLogger, "enterinf infine loop");
+    LOG4CXX_INFO(rootLogger, "thread:" << threadId << " is desired to be ran on CPU:" << desiredCpuNum);
+    LOG4CXX_INFO(rootLogger, "entering infine loop");
     while (true)
     {
-        unsigned int numSecToSleep = 1;
+        unsigned int numSecToSleep = 3;
         this_thread::sleep_for(chrono::seconds(numSecToSleep));
         LOG4CXX_INFO(rootLogger, "thread ID:" << threadId << " done sleeping for " << numSecToSleep << " seconds");
-        
-        cpu_set_t cpuSet;
-        CPU_ZERO(&cpuSet);
-        
-        int res = pthread_getaffinity_np(threadId, sizeof(cpuSet), &cpuSet); 
-        if (0 != res)
-        {
-            LOG4CXX_ERROR(rootLogger, "was unable to get thread CPU affinity value, aborting");
-            return;
-        }
-
-        if (CPU_ISSET(desiredCpuNum, &cpuSet))
-        {
-            LOG4CXX_INFO(rootLogger, "thread ID:" << threadId << " is set to run on CPU:" << desiredCpuNum);
-        }
+        int usedCpuNum = sched_getcpu();
+        LOG4CXX_INFO(rootLogger, "thread ID:" << threadId << " is running on CPU:" << usedCpuNum);
     }
 }

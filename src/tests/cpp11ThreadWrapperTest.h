@@ -16,7 +16,7 @@ TEST(posixCpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletionJoin)
     LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper run its function and join it");
 	HeapLeakChecker heap_checker("test_posixCpp11ThreadWrapper");
     {
-		PosixCpp11ThreadWrapper<pthread_t> sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);
+		PosixCpp11ThreadWrapper sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);
     }
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 	
@@ -29,8 +29,8 @@ TEST(posixCpp11ThreadWrapperTest, createSingleThreadMoveIntoVectorAndThenRunTill
     LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper run its function and join it");
 	HeapLeakChecker heap_checker("test_posixCpp11ThreadWrapper");
     {
-		PosixCpp11ThreadWrapper<pthread_t> sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);
-		std::vector<PosixCpp11ThreadWrapper<pthread_t>> threadsVec;
+		PosixCpp11ThreadWrapper sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);
+		std::vector<PosixCpp11ThreadWrapper> threadsVec;
 		threadsVec.emplace_back(std::move(sampleWrappedThread));
     }
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");

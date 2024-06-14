@@ -44,7 +44,7 @@ public:
         size_t numOfThreads = this->GetThreadsCapacity();
         for (uint32_t i = 0; i < numOfThreads; ++i)
         {
-            m_workerThreadsVec.emplace_back(PosixCpp11ThreadWrapper<pthread_t>(std::move(std::thread(&ThreadPool::workerThreadLoop, this)), &std::thread::join));
+            m_workerThreadsVec.emplace_back(PosixCpp11ThreadWrapper(std::move(std::thread(&ThreadPool::workerThreadLoop, this)), &std::thread::join));
         }
 
         LOG4CXX_INFO(rootLogger, "Created " << numOfThreads << " worker threads");
@@ -162,7 +162,7 @@ private:
 
     bool m_shouldTerminate;                         // Tells threads to stop looking for jobs
     std::condition_variable m_condVar;              // Allows threads to wait on new jobs or termination 
-    std::vector<PosixCpp11ThreadWrapper<pthread_t>> m_workerThreadsVec;
+    std::vector<PosixCpp11ThreadWrapper> m_workerThreadsVec;
     
     std::mutex m_workItemQueueMutex;                // Prevents data races to the job queue
     std::queue<T> m_workItems;
