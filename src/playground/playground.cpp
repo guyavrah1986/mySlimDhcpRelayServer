@@ -15,6 +15,15 @@
 
 using namespace std;
 
+int func1(int argc, char** argv)
+{
+    int r = argc;
+    string s = string(argv[0]);
+    cout << s;
+    r = 9;
+    return r;
+}
+
 int runPlaygroundFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
@@ -27,11 +36,10 @@ int runPlaygroundFunc(int argc, char** argv)
       
     // Add functions to the dictionary
     // -------------------------------
-    funcDict["cpp11ThreadExample"] = &cpp11StdThreadExample;
+    funcDict["cpp11StdThreadExample"] = &cpp11StdThreadExample;
     funcDict["threadPoolUsageExample"] = &threadPoolUsageExample;
     funcDict["setThreadPriorityExample"] = &setThreadPriorityExample;
     funcDict["setThreadCpuAffinityExample"] = &setThreadCpuAffinityExample;
-    funcDict["cpp11StdThreadWrapperExample"] = &cpp11StdThreadWrapperExample;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
     funcDict["posixCpp11StdThreadWrapperSetThreadPriority"] = &posixCpp11StdThreadWrapperSetThreadPriority;
     
@@ -72,22 +80,6 @@ int cpp11StdThreadExample(int argc, char** argv)
     return 0;
 }
 
-int cpp11StdThreadWrapperExample(int argc, char** argv)
-{
-    auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
-    LOG4CXX_INFO(rootLogger, "start of std::thread wrapper usage example");
-    if (nullptr == argv)
-    {
-        LOG4CXX_ERROR(rootLogger, "got null pointer");
-        return -1;
-    }
-
-    PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(cpp11StdThreadWrapperSampleFunc, 1)), &thread::join);
-    LOG4CXX_INFO(rootLogger, "end of std::thread wrapper usage example");
-    return 0;
-}
-
 int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
@@ -99,7 +91,7 @@ int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
         return -1;
     }
 
-    PosixCpp11ThreadWrapper sampleWrappedThread(std::move(thread(runLoopFunc)), &thread::join);
+    PosixCpp11ThreadWrapper<pthread_t> sampleWrappedThread(std::move(thread(runLoopFunc)), &thread::join);
     LOG4CXX_INFO(rootLogger, "created and started the POSIX thread wrapper");
     int priorityToSet = 5;
     bool ret = sampleWrappedThread.SetScheduling(priorityToSet, SCHED_OTHER);
@@ -110,7 +102,7 @@ int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
     }
 
     LOG4CXX_INFO(rootLogger, "changed its priority to:" << priorityToSet);
-    size_t workerThreadId = sampleWrappedThread.GetThreadId();
+    pthread_t workerThreadId = sampleWrappedThread.GetThreadId();
     LOG4CXX_INFO(rootLogger, "check the priority of thread:" << workerThreadId);
     return 0;
 }
@@ -166,11 +158,11 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
     LOG4CXX_INFO(rootLogger, "Socket is now listening...");
 
     // for debug - remove afterwards
-    /*
-    LOG4CXX_INFO(rootLogger, "Press any key to continue");
-    char cInput;
-    cin >> cInput;
-    */
+    
+    //LOG4CXX_INFO(rootLogger, "Press any key to continue");
+    //char cInput;
+    //cin >> cInput;
+    
 
     // This is where the server accepts incoming connections
     LOG4CXX_INFO(rootLogger, "about to start and accepting connections...");
@@ -239,14 +231,11 @@ int setThreadCpuAffinityExample(int argc, char** argv)
     LOG4CXX_INFO(rootLogger, "machine has:" << numCores << " cores");
 
     size_t desiredCpuNum = 1;
-    PosixCpp11ThreadWrapper myThread(move(thread(dummyLoopFunc, desiredCpuNum)), &thread::join);
+    PosixCpp11ThreadWrapper<pthread_t> myThread(move(thread(dummyLoopFunc, desiredCpuNum)), &thread::join);
     pthread_t threadId = myThread.GetThreadId();
-
-
-    LOG4CXX_ERROR(rootLogger, "successfully set thread" << threadId << " on CPU:" << desiredCpuNum);
+    LOG4CXX_INFO(rootLogger, "successfully set thread" << threadId << " on CPU:" << desiredCpuNum);
     return 0;
 }
-
 
 int threadPoolUsageExample(int argc, char** argv)
 {

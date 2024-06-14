@@ -3,11 +3,11 @@
 
 // Public functions
 // ================
+int func1(int argc, char** argv);
+
 int runPlaygroundFunc(int argc, char** argv);
 
 int cpp11StdThreadExample(int argc, char** argv);
-
-int cpp11StdThreadWrapperExample(int argc, char** argv);
 
 int simpleSocketListeningThreadFunc(int argc, char** argv);
 

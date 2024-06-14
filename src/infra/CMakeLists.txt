@@ -2,7 +2,9 @@
 # ======================================================
 set(libName "infraLib")
 include(../../globalDefines.cmake)
-add_library(${libName} SHARED cpp11ThreadWrapper.cpp posixCpp11ThreadWrapper.cpp)
+add_library(${libName} SHARED dummyFileForCmpilation.cpp 
+                              include/cpp11ThreadWrapper.h 
+                              include/posixCpp11ThreadWrapper.h)
 
 # In order to use the C++11 <thread> one needs to link against
 # the respective "system threading library". The project intendent
@@ -18,4 +20,4 @@ if( BUILD_UNIT_TESTS )
     message(STATUS "setting additional linker flags for unit testing:${unit_tests_link_options}")
 endif()
 
-message(STATUS "End of CMakeLists.txt of ${libName} - created library")
+message(STATUS "End of CMakeLists.txt of ${libName} - library was created!")
