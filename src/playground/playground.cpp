@@ -15,15 +15,6 @@
 
 using namespace std;
 
-int func1(int argc, char** argv)
-{
-    int r = argc;
-    string s = string(argv[0]);
-    cout << s;
-    r = 9;
-    return r;
-}
-
 int runPlaygroundFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();

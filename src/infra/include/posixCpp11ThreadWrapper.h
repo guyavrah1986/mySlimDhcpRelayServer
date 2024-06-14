@@ -8,6 +8,8 @@
 // ============================================================================
 #pragma once
 
+#include <log4cxx/logger.h>
+
 #include "cpp11ThreadWrapper.h"
 
 class PosixCpp11ThreadWrapper : public Cpp11ThreadWrapper
@@ -30,13 +32,16 @@ public:
         CPU_ZERO(&cpuset);
         CPU_SET(cpuNum, &cpuset);
         int retCode = pthread_setaffinity_np(this->GetThread().native_handle(),
-                                        sizeof(cpu_set_t), &cpuset);
+                                             sizeof(cpu_set_t), &cpuset);
         if (0 != retCode)
         {
             LOG4CXX_ERROR(rootLogger, "got error return code:" << retCode 
                 << " and was unable to set thread's affinity");
             return false;
         }
+
+        LOG4CXX_DEBUG(rootLogger, "set thread:" << this->GetThread().native_handle() 
+                      << " on CPU:" << cpuNum);
 
         return true;
     }
