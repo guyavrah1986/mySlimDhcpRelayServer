@@ -38,20 +38,8 @@ class Cpp11ThreadWrapper
 public:
 	typedef void (std::thread::*RAIIAction)();
 
-	Cpp11ThreadWrapper(std::thread&& t, RAIIAction action)
-		: m_thread(std::move(t))
-		, m_actionUponDestruction(action)
-	{
-		
-	}
-
-	virtual ~Cpp11ThreadWrapper()
-	{
-		if (true == m_thread.joinable() && nullptr != m_actionUponDestruction)
-		{
-			(m_thread.*m_actionUponDestruction)();
-		}
-	}
+	Cpp11ThreadWrapper(std::thread&& t, RAIIAction action);
+	virtual ~Cpp11ThreadWrapper();
 
 	// Copy semantics - disabled
 	// =========================
@@ -60,27 +48,8 @@ public:
 
 	// Move semantics 
 	// ==============
-    Cpp11ThreadWrapper(Cpp11ThreadWrapper&& other) noexcept
-		: m_actionUponDestruction(move(other.m_actionUponDestruction))
-	{
-
-	}
-	
-	Cpp11ThreadWrapper& operator=(Cpp11ThreadWrapper&& other) noexcept
-	{
-		if (this == &other)
-		{
-			return *this;
-		}
-
-		//this->m_threadId = other.m_threadId;
-		this->m_thread = move(other.m_thread);
-		this->m_actionUponDestruction = move(m_actionUponDestruction);
-
-		//other.m_threadId = 0;
-		other.m_actionUponDestruction = nullptr;
-		return *this;
-	}
+    Cpp11ThreadWrapper(Cpp11ThreadWrapper&& other) noexcept;
+	Cpp11ThreadWrapper& operator=(Cpp11ThreadWrapper&& rhs) noexcept;
 
 	// Getters and setters
 	// ===================
@@ -95,15 +64,7 @@ public:
 	virtual bool SetAffinity(unsigned int cpuNum) = 0;
 
 protected:
-	bool IsValidCpuNum(unsigned int cpuNum) const
-	{
-		if (cpuNum > std::thread::hardware_concurrency())
-		{
-			return false;
-		}
-
-		return true;
-	}
+	bool IsValidCpuNum(unsigned int cpuNum) const;
 
 private:
 	std::thread m_thread;

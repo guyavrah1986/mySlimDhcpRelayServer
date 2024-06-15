@@ -8,59 +8,27 @@
 // ============================================================================
 #pragma once
 
-#include <log4cxx/logger.h>
-
 #include "cpp11ThreadWrapper.h"
 
 class PosixCpp11ThreadWrapper : public Cpp11ThreadWrapper
 {
 public:
-    PosixCpp11ThreadWrapper(std::thread&& t, Cpp11ThreadWrapper::RAIIAction action) 
-        : Cpp11ThreadWrapper(std::move(t), action)
-    {
+    PosixCpp11ThreadWrapper(std::thread&& t, Cpp11ThreadWrapper::RAIIAction action);
+    virtual ~PosixCpp11ThreadWrapper();
 
-    }
+    // Copy semantics - disabled
+	// =========================
+    PosixCpp11ThreadWrapper(const PosixCpp11ThreadWrapper& other) = delete;
+	PosixCpp11ThreadWrapper& operator=(const PosixCpp11ThreadWrapper& rhs) = delete;
+
+	// Move semantics 
+	// ==============
+    PosixCpp11ThreadWrapper(PosixCpp11ThreadWrapper&& other) noexcept;
+    PosixCpp11ThreadWrapper& operator=(PosixCpp11ThreadWrapper&& rhs) noexcept;
 
     // Abstract interface - implementation
 	// ===================================
-    bool SetAffinity(unsigned int cpuNum) override
-    {   
-        auto rootLogger = log4cxx::Logger::getRootLogger();
-        if (false == IsValidCpuNum(cpuNum))
-        {
-            LOG4CXX_ERROR(rootLogger, "got an invlid CPU num");
-            return false;
-        }
+    bool SetAffinity(unsigned int cpuNum) override;
+    bool SetScheduling(int priority, int policy = SCHED_OTHER) override;
 
-        cpu_set_t cpuset;
-        CPU_ZERO(&cpuset);
-        CPU_SET(cpuNum, &cpuset);
-        int retCode = pthread_setaffinity_np(this->GetThread().native_handle(),
-                                             sizeof(cpu_set_t), &cpuset);
-        if (0 != retCode)
-        {
-            LOG4CXX_ERROR(rootLogger, "got error return code:" << retCode 
-                << " and was unable to set thread's affinity");
-            return false;
-        }
-
-        LOG4CXX_DEBUG(rootLogger, "set thread:" << this->GetThread().native_handle() 
-                      << " on CPU:" << cpuNum);
-
-        return true;
-    }
-
-    bool SetScheduling(int priority, int policy = SCHED_OTHER) override
-    {
-        if (priority < 100)
-        {
-            return true;
-        }
-        else if (policy > 200)
-        {
-            return true;
-        }
-
-        return false;
-    }
 };

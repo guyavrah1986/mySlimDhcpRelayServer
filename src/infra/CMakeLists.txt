@@ -2,9 +2,8 @@
 # ======================================================
 set(libName "infraLib")
 include(../../globalDefines.cmake)
-add_library(${libName} SHARED dummyFileForCmpilation.cpp 
-                              include/cpp11ThreadWrapper.h 
-                              include/posixCpp11ThreadWrapper.h)
+add_library(${libName} SHARED cpp11ThreadWrapper.cpp 
+                              posixCpp11ThreadWrapper.cpp)
 
 # In order to use the C++11 <thread> one needs to link against
 # the respective "system threading library". The project intendent
