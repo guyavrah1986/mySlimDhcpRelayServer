@@ -101,19 +101,15 @@ int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv)
 int simpleSocketListeningThreadFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "start");
     LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
     if (nullptr == argv)
     {
         LOG4CXX_ERROR(rootLogger, "got null pointer");
         return -1;
     }
+
     int socket_desc, client_sock, c;
     struct sockaddr_in server, client;
-
-    // For debug - get the main thread ID
-    size_t mainThreadId = hash<thread::id>{}(this_thread::get_id());
-
     //Create socket
     socket_desc = socket(AF_INET, SOCK_STREAM, 0);
     if (-1 == socket_desc)
@@ -123,12 +119,10 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
     }
     
     LOG4CXX_INFO(rootLogger, "Socket created successfully");
-
     // Set the port number on which the server will listen on
     uint16_t portNum = 8888;
 
     //Prepare the sockaddr_in structure
-
     server.sin_family = AF_INET;            // IPv4
     server.sin_addr.s_addr = INADDR_ANY;    // Accepts incoming connections from all IPv4 
     server.sin_port = htons(portNum);
@@ -136,43 +130,32 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
     // Bind
     if( bind(socket_desc,(struct sockaddr *)&server , sizeof(server)) < 0)
     {
-        //print the error message
         LOG4CXX_ERROR(rootLogger, "bind failed, aborting");
         return 1;
     }
 
     LOG4CXX_INFO(rootLogger, "Socket was binded successfully");
-
     // Listen for incoming connection on this port
     int maxNumOfWaitingConnections = 3;
     listen(socket_desc, maxNumOfWaitingConnections);
     LOG4CXX_INFO(rootLogger, "Socket is now listening...");
 
-    // for debug - remove afterwards
-    
-    //LOG4CXX_INFO(rootLogger, "Press any key to continue");
-    //char cInput;
-    //cin >> cInput;
-    
-
     // This is where the server accepts incoming connections
     LOG4CXX_INFO(rootLogger, "about to start and accepting connections...");
     while((client_sock = accept(socket_desc, (struct sockaddr*)&client, (socklen_t*)&c)))
-    {
-        LOG4CXX_INFO(rootLogger, "Accepted connection on the main thread which is:" << mainThreadId);
-        
-        // Create a thread to handle the connection
-        
-		//Cpp11ThreadWrapper sampleWrappedThread(std::move(thread(workerThreadFunc1, client_sock)), &thread::join);
-        
-        LOG4CXX_INFO(rootLogger, "kicked off a worker thread for client socket:" << client_sock);
-        LOG4CXX_INFO(rootLogger, "back to wait (sleep) on accept...");
-    }
+    { 
+        if (client_sock < 0)
+        {
+            LOG4CXX_ERROR(rootLogger, "accept failed, aborting");
+            return 1;
+        }
      
-    if (client_sock < 0)
-    {
-        LOG4CXX_ERROR(rootLogger, "accept failed, aborting");
-        return 1;
+        LOG4CXX_INFO(rootLogger, "Accepted connection on the main thread which is:" << this_thread::get_id());   
+        // Create a thread to handle the connection (request) of this specific client
+	    PosixCpp11ThreadWrapper clientWorkerThread(move(thread(workerThreadFunc1, client_sock)), &thread::join);
+        
+        LOG4CXX_INFO(rootLogger, "AFTER spwanning a worker thread for client socket:" << client_sock);
+        LOG4CXX_INFO(rootLogger, "back to wait (sleep) on accept...");
     }
 
     LOG4CXX_INFO(rootLogger, "end");
@@ -297,10 +280,10 @@ int threadPoolUsageExample(int argc, char** argv)
 // ===================
 // Utilities functions:
 // ===================
-void workerThreadFunc1(int num)
+void workerThreadFunc1(int socketNum)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "thread:" << this_thread::get_id() << " got num:" << num);
+    LOG4CXX_INFO(rootLogger, "thread:" << this_thread::get_id() << " got num:" << socketNum);
     LOG4CXX_INFO(rootLogger, "END of handler function");
 }
 

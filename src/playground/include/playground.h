@@ -19,7 +19,7 @@ int threadPoolUsageExample(int argc, char** argv);
 
 // Utilities functions
 // ===================
-void workerThreadFunc1(int num);
+void workerThreadFunc1(int socketNum);
 
 int cpp11StdThreadWrapperSampleFunc(int num);
 
