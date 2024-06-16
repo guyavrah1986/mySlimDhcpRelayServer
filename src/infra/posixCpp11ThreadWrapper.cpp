@@ -7,18 +7,21 @@ using namespace std;
 PosixCpp11ThreadWrapper::PosixCpp11ThreadWrapper(thread&& t, Cpp11ThreadWrapper::RAIIAction action) 
     : Cpp11ThreadWrapper(move(t), action)
 {
-
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_DEBUG(rootLogger, "created PosixCpp11ThreadWrapper object");
 }
 
 PosixCpp11ThreadWrapper::~PosixCpp11ThreadWrapper()
 {
-
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_DEBUG(rootLogger, "deleted thread");
 }
 
 PosixCpp11ThreadWrapper::PosixCpp11ThreadWrapper(PosixCpp11ThreadWrapper&& other) noexcept
     : Cpp11ThreadWrapper(move(other))
 {
-
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_DEBUG(rootLogger, "moved thread");
 }
 
 PosixCpp11ThreadWrapper& PosixCpp11ThreadWrapper::operator=(PosixCpp11ThreadWrapper&& rhs) noexcept
@@ -29,6 +32,8 @@ PosixCpp11ThreadWrapper& PosixCpp11ThreadWrapper::operator=(PosixCpp11ThreadWrap
     }
 
     Cpp11ThreadWrapper::operator=(move(rhs));
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_DEBUG(rootLogger, "operator= moved thread");
     return *this;
 }
 

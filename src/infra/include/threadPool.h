@@ -42,9 +42,12 @@ public:
     {   
         auto rootLogger = log4cxx::Logger::getRootLogger();
         size_t numOfThreads = this->GetThreadsCapacity();
+        LOG4CXX_INFO(rootLogger, "thread:" << std::this_thread::get_id() << " is about to create " << numOfThreads << " worker threads");
         for (uint32_t i = 0; i < numOfThreads; ++i)
         {
-            m_workerThreadsVec.emplace_back(PosixCpp11ThreadWrapper(std::move(std::thread(&ThreadPool::workerThreadLoop, this)), &std::thread::join));
+            // PosixCpp11ThreadWrapper(
+            m_workerThreadsVec.emplace_back(std::move(std::thread(&ThreadPool::workerThreadLoop, this)), &std::thread::join);
+            LOG4CXX_INFO(rootLogger, "thread:" << std::this_thread::get_id() << " created worker thread:" << i + 1);
         }
 
         LOG4CXX_INFO(rootLogger, "Created " << numOfThreads << " worker threads");
@@ -60,7 +63,7 @@ public:
             // TODO: should we check for maximum capacity???
             if (false == m_shouldTerminate)
             {
-                m_workItems.emplace(workItem);
+                m_workItemsQueue.emplace(workItem);
             }
             else
             {
@@ -101,7 +104,7 @@ public:
         bool isPoolBusy;
         {
             std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
-            isPoolBusy = !m_workItems.empty();
+            isPoolBusy = !m_workItemsQueue.empty();
         }
 
         return isPoolBusy;
@@ -114,7 +117,7 @@ public:
         size_t numOfWorkItems;
         {
             std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
-            numOfWorkItems = m_workItems.size();
+            numOfWorkItems = m_workItemsQueue.size();
         }
 
         return numOfWorkItems;
@@ -134,29 +137,32 @@ private:
     void workerThreadLoop()
     {
         auto rootLogger = log4cxx::Logger::getRootLogger();
-        LOG4CXX_INFO(rootLogger, "about to start infine loop for thread:");
+        LOG4CXX_DEBUG(rootLogger, "thread:" << std::this_thread::get_id() << " about to enter infinte loop");
         while (true)
         {
             T workItem;
             {
+                LOG4CXX_DEBUG(rootLogger, "thread:" << std::this_thread::get_id() << " BEFORE cond var");
                 std::unique_lock<std::mutex> lock(m_workItemQueueMutex);
                 m_condVar.wait(lock, [this] {
-                    return !m_workItems.empty() || m_shouldTerminate;
+                        return !m_workItemsQueue.empty() || m_shouldTerminate;
                 });
-
+                
+                LOG4CXX_DEBUG(rootLogger, "thread:" << std::this_thread::get_id() << " AFTER cond var");
                 if (true == m_shouldTerminate)
                 {
-                    LOG4CXX_WARN(rootLogger, "terminating infine loop for thread:");
+                    LOG4CXX_WARN(rootLogger, "terminating infine loop for thread:" << std::this_thread::get_id());
                     return;
                 }
 
                 // Extract the next work item from the queue
-                workItem = m_workItems.front();
-                m_workItems.pop();   
+                workItem = m_workItemsQueue.front();
+                m_workItemsQueue.pop();   
             }
 
-            LOG4CXX_INFO(rootLogger, "invoking the worker thread function for thread:");
+            LOG4CXX_INFO(rootLogger, "thread:" << std::this_thread::get_id() << " BEFORE handling work item");
             m_workerThreadFunc(workItem);
+            LOG4CXX_INFO(rootLogger, "thread:" << std::this_thread::get_id() << " AFTER handling work item");
         }
     }
 
@@ -165,6 +171,6 @@ private:
     std::vector<PosixCpp11ThreadWrapper> m_workerThreadsVec;
     
     std::mutex m_workItemQueueMutex;                // Prevents data races to the job queue
-    std::queue<T> m_workItems;
+    std::queue<T> m_workItemsQueue;
     std::function<void(T)> m_workerThreadFunc;      // Points to the common worker threads function
 };

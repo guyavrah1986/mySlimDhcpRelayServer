@@ -241,7 +241,6 @@ int setThreadCpuAffinityExample(int argc, char** argv)
 int threadPoolUsageExample(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "start");
     LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
     if (nullptr == argv)
     {
@@ -249,18 +248,14 @@ int threadPoolUsageExample(int argc, char** argv)
         return -1;
     }
 
-    ThreadPool<int> threadPool(2, workerThreadFunc1);
-    threadPool.Start();
-    int workItem = 1;
-    LOG4CXX_INFO(rootLogger, "about to add work item to the thread pool's queue");
-    if (false == threadPool.QueueWorkItem(workItem))
-    {
-        LOG4CXX_ERROR(rootLogger, "was unable to add work item:" << workItem << ", aborting");
-        return -1;
-    }
+    unsigned int numOfThreadsInPool = 2;
+    ThreadPool<int> threadPool(numOfThreadsInPool, workerThreadFunc1);
+    LOG4CXX_INFO(rootLogger, "created ThreadPool object with " << numOfThreadsInPool << " worker threads" 
+        << " from thread:" << std::this_thread::get_id());
 
-    LOG4CXX_INFO(rootLogger, "started the pool and added single work item");
-    workItem = 0;
+    threadPool.Start();
+    LOG4CXX_INFO(rootLogger, "started the pool!");
+    int workItem = 0;
     while (true)
     {
         LOG4CXX_INFO(rootLogger, "please enter your choice: 1 - add work item, 2 - terminate program");
@@ -290,7 +285,7 @@ int threadPoolUsageExample(int argc, char** argv)
             }
             default:
             {
-                LOG4CXX_INFO(rootLogger, "please insert 1 or 2");
+                LOG4CXX_INFO(rootLogger, "invalid input, please insert 1 or 2");
                 break;
             }
         }
@@ -305,16 +300,7 @@ int threadPoolUsageExample(int argc, char** argv)
 void workerThreadFunc1(int num)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "START of handler function, the socket got is:" << num);
-    size_t threadId = hash<thread::id>{}(this_thread::get_id());
-    LOG4CXX_INFO(rootLogger, "thread ID is:" << threadId << " got num:" << num);
-
-    // For debug, write the socket value allocated to this request
-    // back to the client:
-    //string msgToClient = "The socket number allocated was:" + num;
-
-    //size_t msgLen = msgToClient.length();
-    //write(num, msgToClient.c_str(), msgLen);
+    LOG4CXX_INFO(rootLogger, "thread:" << this_thread::get_id() << " got num:" << num);
     LOG4CXX_INFO(rootLogger, "END of handler function");
 }
 

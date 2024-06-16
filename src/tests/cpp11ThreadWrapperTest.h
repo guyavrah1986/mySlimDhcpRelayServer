@@ -10,10 +10,10 @@ void dummyFuncToRun(int num)
     LOG4CXX_INFO(rootLogger, "got num:" << num);
 }
 
-TEST(posixCpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletionJoin)
+TEST(posixCpp11ThreadWrapperTest, createSingleThreadOnTheStack)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper run its function and join it");
+    LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper on the stack");
 	HeapLeakChecker heap_checker("test_posixCpp11ThreadWrapper");
     {
 		PosixCpp11ThreadWrapper sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);
@@ -23,10 +23,10 @@ TEST(posixCpp11ThreadWrapperTest, createSingleThreadAndRunTillCompletionJoin)
 	LOG4CXX_INFO(rootLogger, "thread ran its function and was joined successfully");
 }
 
-TEST(posixCpp11ThreadWrapperTest, createSingleThreadMoveIntoVectorAndThenRunTillCompletionJoin)
+TEST(posixCpp11ThreadWrapperTest, createSingleThreadMoveIntoVector)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper run its function and join it");
+    LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper and insert it into an std::vector");
 	HeapLeakChecker heap_checker("test_posixCpp11ThreadWrapper");
     {
 		PosixCpp11ThreadWrapper sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);
@@ -41,7 +41,7 @@ TEST(posixCpp11ThreadWrapperTest, createSingleThreadMoveIntoVectorAndThenRunTill
 TEST(posixCpp11ThreadWrapperTest, setCpuCoreNumberForAffinity)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper run its function and join it");
+    LOG4CXX_INFO(rootLogger, "about to create single PosixCpp11ThreadWrapper and set its affinity");
 	HeapLeakChecker heap_checker("test_posixCpp11ThreadWrapper");
     {
 		PosixCpp11ThreadWrapper sampleWrappedThread(std::move(std::thread(dummyFuncToRun, 17)), &std::thread::join);

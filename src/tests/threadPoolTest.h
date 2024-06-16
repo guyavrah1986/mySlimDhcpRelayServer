@@ -110,7 +110,7 @@ TEST(threadPoolTest, checkQueueWorkItemFunction)
 TEST(threadPoolTest, checkStartAndStopFunctions)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
-    size_t numOfThreads = std::thread::hardware_concurrency();
+    size_t numOfThreads = 2; //std::thread::hardware_concurrency();
     HeapLeakChecker heap_checker("test_threadPool");
     {
         ThreadPool<int> threadPool(numOfThreads, workerFuncSample<int>);
@@ -136,9 +136,11 @@ TEST(threadPoolTest, createThreadPoolWithTwoThreadsAndStopThemAfterSometime)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
     size_t numOfThreads = 2;
+    LOG4CXX_INFO(rootLogger, "the MAIN thread that runs the unit test function is:" << std::this_thread::get_id());
     HeapLeakChecker heap_checker("test_threadPool");
     {
         ThreadPool<int> threadPool(numOfThreads, workerFuncSample<int>);
+        LOG4CXX_INFO(rootLogger, "created thread pool with:" << numOfThreads << " threads");
 
         // At first, the work items queue is empty, so the Busy method
         // should return false
@@ -150,6 +152,7 @@ TEST(threadPoolTest, createThreadPoolWithTwoThreadsAndStopThemAfterSometime)
         threadPool.Start();
         EXPECT_EQ(numOfThreads, threadPool.GetThreadsCapacity());
         EXPECT_EQ(numOfThreads, threadPool.GetNumOfThreads());
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         threadPool.Stop();
     } 
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
@@ -185,13 +188,12 @@ TEST(threadPoolTest, createThreadPoolWithTwoThreadsAddWorkItemAndStopThemAfterSo
     if (!heap_checker.NoLeaks()) assert(NULL == "heap memory leak");
 }
 
-TEST(threadPoolTest, addWorkItemBeforeAndAfterThreadPoolIsStarted)
+TEST(threadPoolTest, addWorkItemBeforeThreadPoolIsStarted)
 { 
 	auto rootLogger = log4cxx::Logger::getRootLogger();
     ThreadPool<int> threadPool(std::thread::hardware_concurrency(), workerFuncSample<int>);
     size_t numOfWorkItems = 0;
-    // At first, the work items queue is empty, so the Busy method
-    // should return false
+
     int workItem1 = 1;
     EXPECT_EQ(true, threadPool.QueueWorkItem(workItem1));
     ++numOfWorkItems;
