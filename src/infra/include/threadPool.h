@@ -11,7 +11,7 @@
 template<typename T> class ThreadPool
 {
 public:
-    explicit ThreadPool(const uint32_t numOfThreads, std::function<void(T)> workerThreadFunc)
+    ThreadPool(const uint32_t numOfThreads, std::function<void(T)> workerThreadFunc)
         : m_shouldTerminate(false),
         m_workerThreadFunc(workerThreadFunc)
     {
@@ -43,14 +43,13 @@ public:
         auto rootLogger = log4cxx::Logger::getRootLogger();
         size_t numOfThreads = this->GetThreadsCapacity();
         LOG4CXX_INFO(rootLogger, "thread:" << std::this_thread::get_id() << " is about to create " << numOfThreads << " worker threads");
-        for (uint32_t i = 0; i < numOfThreads; ++i)
+        for (size_t i = 0; i < numOfThreads; ++i)
         {
-            // PosixCpp11ThreadWrapper(
             m_workerThreadsVec.emplace_back(std::move(std::thread(&ThreadPool::workerThreadLoop, this)), &std::thread::join);
             LOG4CXX_INFO(rootLogger, "thread:" << std::this_thread::get_id() << " created worker thread:" << i + 1);
         }
 
-        LOG4CXX_INFO(rootLogger, "Created " << numOfThreads << " worker threads");
+        LOG4CXX_INFO(rootLogger, "Created " << numOfThreads << " worker threads, from now and till it is stopped, work item can be added to the queue");
     }
 
     bool QueueWorkItem(const T& workItem)
@@ -85,17 +84,6 @@ public:
         }
 
         m_condVar.notify_all();
-
-        // Before terminating we must join all threads so that when the 
-        // destructor gets called, the they will be un-joinable
-        // TODO: when using the wrapperThread class this is probably not needed...
-        /*
-        for (std::thread& workerThread : m_workerThreadsVec)
-        {
-            workerThread.join();
-        }
-        */
-
         m_workerThreadsVec.clear();
     }
 
