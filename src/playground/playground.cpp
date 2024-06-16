@@ -124,7 +124,7 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
 
     //Prepare the sockaddr_in structure
     server.sin_family = AF_INET;            // IPv4
-    server.sin_addr.s_addr = INADDR_ANY;    // Accepts incoming connections from all IPv4 
+    server.sin_addr.s_addr = INADDR_ANY;    // Accepts incoming connections from all IPv4 interfaces (including 127.0.0.1)
     server.sin_port = htons(portNum);
 
     // Bind
@@ -141,7 +141,7 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
     LOG4CXX_INFO(rootLogger, "Socket is now listening...");
 
     // This is where the server accepts incoming connections
-    LOG4CXX_INFO(rootLogger, "about to start and accepting connections...");
+    LOG4CXX_INFO(rootLogger, "about to start and accepting connections on port:" << portNum);
     while((client_sock = accept(socket_desc, (struct sockaddr*)&client, (socklen_t*)&c)))
     { 
         if (client_sock < 0)
@@ -283,7 +283,7 @@ int threadPoolUsageExample(int argc, char** argv)
 void workerThreadFunc1(int socketNum)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "thread:" << this_thread::get_id() << " got num:" << socketNum);
+    LOG4CXX_INFO(rootLogger, "thread:" << this_thread::get_id() << " is handling connection on client socket num:" << socketNum);
     LOG4CXX_INFO(rootLogger, "END of handler function");
 }
 
