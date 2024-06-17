@@ -5,7 +5,7 @@
 // Each header file listed here contains GTest unit tests for some objects
 #include "../infra/include/logger.h"
 #include "cpp11ThreadWrapperTest.h"
-#include "dataBaseManagerTest.h"
+#include "testSocket.h"
 #include "threadPoolTest.h"
 
 using namespace std;

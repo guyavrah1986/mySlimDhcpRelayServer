@@ -24,7 +24,7 @@ include_directories(src)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/infra)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/dataBaseManager)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/communication)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/tests)
 

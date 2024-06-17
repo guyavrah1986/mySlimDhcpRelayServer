@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "dataBaseManager/include/lib1.h"
 #include "infra/include/cpp11ThreadWrapper.h"
 #include "infra/include/logger.h"
 #include "playground/include/playground.h"
