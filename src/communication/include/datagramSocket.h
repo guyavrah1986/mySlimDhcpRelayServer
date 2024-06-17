@@ -5,11 +5,15 @@
 class DatagramSocket : public SocketBase
 {
 public:
-    DatagramSocket();
+    DatagramSocket(int protocol);
     virtual ~DatagramSocket();
 
+    // Copy semantics - disabled:
+    // =========================
+    DatagramSocket(const DatagramSocket& other) = delete;
+    DatagramSocket& operator=(const DatagramSocket& rhs) = delete;
 
     // Abstract interface:
     // ==================
-    virtual bool CreateSocket() override; 
+    virtual int GetSocketType() const override;
 };

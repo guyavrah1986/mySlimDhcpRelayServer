@@ -3,17 +3,23 @@
 class SocketBase
 {
 public:
-    SocketBase();
+    SocketBase(int protocol);
     virtual ~SocketBase();
 
-    enum Family
-    {
-        TCP = 0,
-        UDP,
-        RAW
-    };
-
+    // Copy semantics - disabled:
+    // =========================
+    SocketBase(const SocketBase& other) = delete;
+    SocketBase& operator=(const SocketBase& rhs) = delete;
+    
+    // Public API:
+    // ===========
+    virtual bool CreateSocket();    
+    
     // Abstract interface:
     // ==================
-    virtual bool CreateSocket() = 0;    
+    virtual int GetSocketType() const = 0;
+
+protected:
+    int m_protocol;
+    int m_socketDescriptor;
 };
