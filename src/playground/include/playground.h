@@ -9,6 +9,8 @@ int cpp11StdThreadExample(int argc, char** argv);
 
 int simpleSocketListeningThreadFunc(int argc, char** argv);
 
+int simpleDatagramSocketExampleFunc(int argc, char** argv);
+
 int posixCpp11StdThreadWrapperSetThreadPriority(int argc, char** argv);
 
 int setThreadPriorityExample(int argc, char** argv);

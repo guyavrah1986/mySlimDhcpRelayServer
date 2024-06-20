@@ -31,6 +31,7 @@ int runPlaygroundFunc(int argc, char** argv)
     funcDict["threadPoolUsageExample"] = &threadPoolUsageExample;
     funcDict["setThreadPriorityExample"] = &setThreadPriorityExample;
     funcDict["setThreadCpuAffinityExample"] = &setThreadCpuAffinityExample;
+    funcDict["simpleDatagramSocketExampleFunc"] = &simpleDatagramSocketExampleFunc;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
     funcDict["posixCpp11StdThreadWrapperSetThreadPriority"] = &posixCpp11StdThreadWrapperSetThreadPriority;
     
@@ -156,6 +157,59 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
         
         LOG4CXX_INFO(rootLogger, "AFTER spwanning a worker thread for client socket:" << client_sock);
         LOG4CXX_INFO(rootLogger, "back to wait (sleep) on accept...");
+    }
+
+    LOG4CXX_INFO(rootLogger, "end");
+    return 0;
+}
+
+int simpleDatagramSocketExampleFunc(int argc, char** argv)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
+
+    string portNum(argv[4]);
+    LOG4CXX_INFO(rootLogger, "the port number to open is:" << portNum);
+    int fd;
+    if ( (fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
+    {
+        LOG4CXX_ERROR(rootLogger, "failed to create socket, aborting");
+        return 1;
+    }
+
+    unsigned long ul = stoul(portNum);
+    unsigned int port = static_cast<unsigned int>(ul); 
+    struct sockaddr_in serveraddr;
+    memset( &serveraddr, 0, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    serveraddr.sin_port = htons(port);
+    serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    if (bind(fd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 )
+    {
+        perror( "bind failed" );
+        LOG4CXX_ERROR(rootLogger, "bind to UDP port number:" << portNum << " failed, aborting");
+        return 1;
+    }
+
+    char buffer[200];
+    for(int i = 0; i < 4; i++ )
+    {
+        LOG4CXX_INFO(rootLogger, "about to wait on recvfrom");
+        int length = recvfrom( fd, buffer, sizeof(buffer) - 1, 0, NULL, 0);
+        if ( length < 0 )
+        {
+            LOG4CXX_ERROR(rootLogger, "recvfrom failed");
+            break;
+        }
+
+        buffer[length] = '\0';
+        string incomingMsg(buffer);
+        LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
     }
 
     LOG4CXX_INFO(rootLogger, "end");
