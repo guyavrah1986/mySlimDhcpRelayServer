@@ -5,8 +5,8 @@
 
 using namespace std;
 
-DatagramSocket::DatagramSocket(int protocol, unsigned int port) 
-    : SocketBase(protocol, port)
+DatagramSocket::DatagramSocket(int protocol, unsigned int port, const string& ipAddressToBind) 
+    : SocketBase(protocol, port, ipAddressToBind)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "created object with protocol:" << m_protocol

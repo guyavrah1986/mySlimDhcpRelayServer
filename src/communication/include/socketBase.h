@@ -3,7 +3,7 @@
 class SocketBase
 {
 public:
-    SocketBase(int protocol, unsigned int port);
+    SocketBase(int protocol, unsigned int port, const std::string& ipAddressToBind);
     virtual ~SocketBase();
 
     // Copy semantics - disabled:
@@ -28,4 +28,5 @@ protected:
     int m_protocol;
     int m_socketDescriptor;
     unsigned int m_port;
+    std::string m_ipAddrToBind;
 };

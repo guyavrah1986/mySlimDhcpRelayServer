@@ -5,7 +5,7 @@
 class DatagramSocket : public SocketBase
 {
 public:
-    DatagramSocket(int protocol, unsigned int port);
+    DatagramSocket(int protocol, unsigned int port, const std::string& ipAddressToBind);
     virtual ~DatagramSocket();
 
     // Copy semantics - disabled:

@@ -12,7 +12,8 @@ TEST(datagrameSocketTest, createSingleDatagramSocketObject)
     {
 		int protocol = 1;
 		unsigned int port = 5001;
-		DatagramSocket testSocket(protocol, port);
+		std::string ipAddrToBind = "127.0.0.1";
+		DatagramSocket testSocket(protocol, port, ipAddrToBind);
 		EXPECT_EQ(SOCK_DGRAM, testSocket.GetSocketType());
 		LOG4CXX_INFO(rootLogger,"created DatagramSocket on the stack");
 
@@ -34,7 +35,8 @@ TEST(datagrameSocketTest, createSocketOnDatagramSocketObjectAndThenCloseIt)
     {
 		int protocol = 1;
 		unsigned int port = 5000;
-		DatagramSocket testSocket(protocol, port);
+		std::string ipAddrToBind = "127.0.0.1";
+		DatagramSocket testSocket(protocol, port, ipAddrToBind);
 		EXPECT_EQ(SOCK_DGRAM, testSocket.GetSocketType());
 
 		// Create the socket:
@@ -66,7 +68,8 @@ TEST(datagrameSocketTest, createSocketThenBindItAndFinallyCloseIt)
     {
 		int protocol = 1;
 		unsigned int port = 5000;
-		DatagramSocket testSocket(protocol, port);
+		std::string ipAddrToBind = "127.0.0.1";
+		DatagramSocket testSocket(protocol, port, ipAddrToBind);
 		EXPECT_EQ(SOCK_DGRAM, testSocket.GetSocketType());
 
 		// Create the socket:
@@ -96,4 +99,3 @@ TEST(datagrameSocketTest, createSocketThenBindItAndFinallyCloseIt)
 
 	LOG4CXX_INFO(rootLogger,"socketTest::createSockeOnDatagramSocketObjectAndThenCloseIt - end");
 }
-

@@ -8,13 +8,13 @@
 
 using namespace std;
 
-SocketBase::SocketBase(int protocol, unsigned int port)
+SocketBase::SocketBase(int protocol, unsigned int port, const string& ipAddressToBind)
     : m_protocol(protocol)
     , m_socketDescriptor(-1)
     , m_port(port)
+    , m_ipAddrToBind(ipAddressToBind)
 {
-    auto rootLogger = log4cxx::Logger::getRootLogger();
-    LOG4CXX_INFO(rootLogger, "created objec with protocol:" << m_protocol);
+
 }
     
 SocketBase::~SocketBase()
@@ -51,12 +51,13 @@ bool SocketBase::CreateSocket()
 
 bool SocketBase::BindSocket()
 {
+    // TODO: Validate the IP address!
     auto rootLogger = log4cxx::Logger::getRootLogger();
     struct sockaddr_in serveraddr = {};
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_port = htons(m_port);
-    serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    if (bind(m_socketDescriptor, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0)
+    serveraddr.sin_addr.s_addr = inet_addr(m_ipAddrToBind.c_str());
+    if (bind(m_socketDescriptor, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
     {
         LOG4CXX_ERROR(rootLogger, "trying to bind socket:" << m_socketDescriptor 
             <<  " to port number:" << m_port << " failed");
@@ -64,7 +65,7 @@ bool SocketBase::BindSocket()
     }
 
     LOG4CXX_INFO(rootLogger, "binded socket:" << m_socketDescriptor << " with port:" << m_port
-        << " to interface:");
+        << " to interface:" << m_ipAddrToBind);
     return true;
 }
 
