@@ -5,7 +5,7 @@
 class DatagramSocket : public SocketBase
 {
 public:
-    DatagramSocket(int protocol);
+    DatagramSocket(int protocol, unsigned int port);
     virtual ~DatagramSocket();
 
     // Copy semantics - disabled:
