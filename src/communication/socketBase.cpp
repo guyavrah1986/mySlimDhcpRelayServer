@@ -12,6 +12,7 @@ SocketBase::SocketBase(int protocol, unsigned int port, const string& ipAddressT
     : m_protocol(protocol)
     , m_socketDescriptor(-1)
     , m_port(port)
+    , m_interfaceId(inet_addr(m_ipAddrToBind.c_str()))
     , m_ipAddrToBind(ipAddressToBind)
 {
 
@@ -56,7 +57,7 @@ bool SocketBase::BindSocket()
     struct sockaddr_in serveraddr = {};
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_port = htons(m_port);
-    serveraddr.sin_addr.s_addr = inet_addr(m_ipAddrToBind.c_str());
+    serveraddr.sin_addr.s_addr = m_interfaceId; //inet_addr(m_ipAddrToBind.c_str());
     if (bind(m_socketDescriptor, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
     {
         LOG4CXX_ERROR(rootLogger, "trying to bind socket:" << m_socketDescriptor 

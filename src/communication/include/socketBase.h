@@ -28,5 +28,6 @@ protected:
     int m_protocol;
     int m_socketDescriptor;
     unsigned int m_port;
+    uint32_t m_interfaceId;
     std::string m_ipAddrToBind;
 };
