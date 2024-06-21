@@ -12,6 +12,7 @@
 #include "include/playground.h"
 #include "../infra/include/posixCpp11ThreadWrapper.h"
 #include "../infra/include/threadPool.h"
+#include "../communication/include/datagramSocket.h"
 
 using namespace std;
 
@@ -163,7 +164,7 @@ int simpleSocketListeningThreadFunc(int argc, char** argv)
     return 0;
 }
 
-int simpleDatagramSocketExampleFunc(int argc, char** argv)
+int simplePosixDatagramSocketExampleFunc(int argc, char** argv)
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
     LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
@@ -210,6 +211,43 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
         buffer[length] = '\0';
         string incomingMsg(buffer);
         LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
+    }
+
+    LOG4CXX_INFO(rootLogger, "end");
+    return 0;
+}
+
+int simpleDatagramSocketExampleFunc(int argc, char** argv)
+{
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_INFO(rootLogger, "got:" << argc << " command line arguments");
+    if (nullptr == argv)
+    {
+        LOG4CXX_ERROR(rootLogger, "got null pointer");
+        return -1;
+    }
+
+    string portNum(argv[4]);
+    string ipAddr(argv[5]);
+    LOG4CXX_INFO(rootLogger, "port, IP address are:" << portNum << "," << ipAddr);
+    int protocol = 1;
+    unsigned long ul = stoul(portNum);
+    unsigned int port = static_cast<unsigned int>(ul); 
+    DatagramSocket datagramSocket(protocol, port, ipAddr);
+
+    // Create the actual underlying socket
+    bool ret = datagramSocket.CreateSocket();
+    if (false == ret)
+    {
+        LOG4CXX_ERROR(rootLogger, "failed to CREATE socket, aborting");
+        return 1;
+    }
+
+    ret = datagramSocket.BindSocket();
+    if (false == ret)
+    {
+        LOG4CXX_ERROR(rootLogger, "failed to BIND socket, aborting");
+        return 1;
     }
 
     LOG4CXX_INFO(rootLogger, "end");

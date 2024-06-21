@@ -14,6 +14,6 @@ if( BUILD_UNIT_TESTS )
 endif()
 
 # Anyways link to the infra library
-target_link_libraries(${libName} PUBLIC infraLib)
+target_link_libraries(${libName} PUBLIC infraLib communicationLib)
 message(STATUS "End of CMakeLists.txt of ${libName} - created library")
 
