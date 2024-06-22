@@ -33,6 +33,7 @@ int runPlaygroundFunc(int argc, char** argv)
     funcDict["setThreadPriorityExample"] = &setThreadPriorityExample;
     funcDict["setThreadCpuAffinityExample"] = &setThreadCpuAffinityExample;
     funcDict["simpleDatagramSocketExampleFunc"] = &simpleDatagramSocketExampleFunc;
+    funcDict["simplePosixDatagramSocketExampleFunc"] = &simplePosixDatagramSocketExampleFunc;
     funcDict["simpleSocketListeningThreadFunc"] = &simpleSocketListeningThreadFunc;
     funcDict["posixCpp11StdThreadWrapperSetThreadPriority"] = &posixCpp11StdThreadWrapperSetThreadPriority;
     
@@ -197,22 +198,19 @@ int simplePosixDatagramSocketExampleFunc(int argc, char** argv)
         return 1;
     }
 
-    char buffer[200];
-    for(int i = 0; i < 4; i++ )
+    const size_t maxSizeBuf = 1500;
+    char buffer[maxSizeBuf];
+    LOG4CXX_INFO(rootLogger, "about to wait on recvfrom");
+    int length = recvfrom( fd, buffer, sizeof(buffer) - 1, 0, NULL, 0);
+    if ( length < 0 )
     {
-        LOG4CXX_INFO(rootLogger, "about to wait on recvfrom");
-        int length = recvfrom( fd, buffer, sizeof(buffer) - 1, 0, NULL, 0);
-        if ( length < 0 )
-        {
-            LOG4CXX_ERROR(rootLogger, "recvfrom failed");
-            break;
-        }
-
-        buffer[length] = '\0';
-        string incomingMsg(buffer);
-        LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
+        LOG4CXX_ERROR(rootLogger, "recvfrom failed");
+        return -1;
     }
 
+    buffer[length] = '\0';
+    string incomingMsg(buffer);
+    LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
     LOG4CXX_INFO(rootLogger, "end");
     return 0;
 }
@@ -249,6 +247,23 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
         LOG4CXX_ERROR(rootLogger, "failed to BIND socket, aborting");
         return 1;
     }
+
+    const size_t maxSizeBuf = 1500;
+    char buffer[maxSizeBuf];
+    int fd = datagramSocket.GetSocketDescriptor();
+    LOG4CXX_INFO(rootLogger, "about to wait on recvfrom");
+    int length = recvfrom(fd, buffer, sizeof(buffer) - 1, 0, NULL, 0);
+    if (length < 0)
+    {
+        LOG4CXX_ERROR(rootLogger, "recvfrom on socket descriptor:" << fd << " failed, aborting");
+        return -1;
+    }
+
+    buffer[length] = '\0';
+    string incomingMsg(buffer);
+    LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
+    LOG4CXX_INFO(rootLogger, "end");
+    return 0;
 
     LOG4CXX_INFO(rootLogger, "end");
     return 0;
