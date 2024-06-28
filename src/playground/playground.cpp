@@ -250,10 +250,10 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
     const size_t maxSizeBuf = 1500;
     char buffer[maxSizeBuf];
     struct sockaddr_in peerAddress = {};
-    socklen_t perrAddrLen = sizeof(peerAddress);
+    socklen_t peerAddrLen = sizeof(peerAddress);
     int fd = datagramSocket.GetSocketDescriptor();
     LOG4CXX_INFO(rootLogger, "using buffer of:" << maxSizeBuf << " to recive data from FD:" << fd);
-    int length = recvfrom(fd, buffer, maxSizeBuf - 1, 0, (struct sockaddr *)&peerAddress, &perrAddrLen);
+    int length = recvfrom(fd, buffer, maxSizeBuf - 1, 0, (struct sockaddr *)&peerAddress, &peerAddrLen);
     if (length < 0)
     {
         LOG4CXX_ERROR(rootLogger, "recvfrom on socket descriptor:" << fd << " failed, aborting");
@@ -263,9 +263,6 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
     buffer[length] = '\0';
     string incomingMsg(buffer);
     LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
-    LOG4CXX_INFO(rootLogger, "end");
-    return 0;
-
     LOG4CXX_INFO(rootLogger, "end");
     return 0;
 }
