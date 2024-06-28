@@ -33,10 +33,14 @@ public:
     virtual bool ReciveData(RecivedPaylodBase& payload) override;
     //virtual bool SendData() override;
 
+    // Getters & setters:
+    // ==================
+
+
 protected:
     /* Address of the host that the last message on this
     socket arrived from. In order to be able to reply to
     this host, user of this class should call the get 
     function to retrieve this value.*/
-    sockaddr_in m_lastRecivedAddress;
+    DgramOrigAddressIpv4 m_lastRecivedAddress;
 };

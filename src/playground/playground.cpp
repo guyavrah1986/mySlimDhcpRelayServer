@@ -249,18 +249,17 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
 
     const size_t maxSizeBuf = 1500;
     char buffer[maxSizeBuf];
-    struct sockaddr_in peerAddress = {};
-    socklen_t peerAddrLen = sizeof(peerAddress);
     int fd = datagramSocket.GetSocketDescriptor();
+    RecivedPaylodBase recvBuff(static_cast<void*>(buffer), maxSizeBuf, 0);
     LOG4CXX_INFO(rootLogger, "using buffer of:" << maxSizeBuf << " to recive data from FD:" << fd);
-    int length = recvfrom(fd, buffer, maxSizeBuf - 1, 0, (struct sockaddr *)&peerAddress, &peerAddrLen);
-    if (length < 0)
+    bool recvivedCorrectly = datagramSocket.ReciveData(recvBuff);
+    if (false == recvivedCorrectly)
     {
         LOG4CXX_ERROR(rootLogger, "recvfrom on socket descriptor:" << fd << " failed, aborting");
         return -1;
     }
-
-    buffer[length] = '\0';
+    
+    static_cast<char*>(recvBuff.m_buff)[recvBuff.m_numBytesRead] = '\0';
     string incomingMsg(buffer);
     LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
     LOG4CXX_INFO(rootLogger, "end");

@@ -6,6 +6,7 @@ RecivedPaylodBase::RecivedPaylodBase(void* buff, unsigned int buffMaxLen, int fl
     : m_buff(buff)
     , m_buffMaxLen(buffMaxLen)
     , m_flags(flags)
+    , m_numBytesRead(-1)
 {
 
 }

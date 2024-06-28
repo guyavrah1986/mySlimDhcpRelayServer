@@ -28,6 +28,7 @@ public:
     void* m_buff;
     unsigned int m_buffMaxLen;
     int m_flags;
+    int m_numBytesRead;
 };
 
 class DgramOrigAddressIpv4
