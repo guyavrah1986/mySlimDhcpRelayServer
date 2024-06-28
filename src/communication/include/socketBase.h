@@ -30,7 +30,7 @@ public:
     int GetSocketDomain() const;
 
 protected:
-    int m_socketDescriptor;
+    int          m_socketDescriptor;
     unsigned int m_port;
     int          m_protocol;
 

@@ -1,5 +1,4 @@
 #include <log4cxx/logger.h>
-#include <sys/socket.h>     // for SOCK_DGRAM
 
 #include "include/datagramSocket.h"
 

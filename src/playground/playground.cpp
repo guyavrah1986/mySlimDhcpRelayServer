@@ -1,13 +1,7 @@
-#include <arpa/inet.h>
-#include <chrono>
 #include <cstring>      // for stderror()
-# include <iostream>
+#include <iostream>
 #include <log4cxx/basicconfigurator.h>
-#include <log4cxx/logger.h>
-#include <stdint.h>
-#include <sys/socket.h>
 #include <unordered_map>
-#include <unistd.h>
 
 #include "include/playground.h"
 #include "../infra/include/posixCpp11ThreadWrapper.h"
@@ -274,7 +268,6 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
     static_cast<char*>(recvBuff.m_buff)[recvBuff.m_numBytesRead] = '\0';
     string incomingMsg(buffer);
     LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
-    sleep(1);
     // Now respond to the client with some message:
     const char sendBuff [] = "Hi from server!";
     size_t buffLen = sizeof(sendBuff);
