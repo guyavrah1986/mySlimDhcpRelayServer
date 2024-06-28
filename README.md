@@ -1,5 +1,5 @@
-# myHttpServer
-C++ based multi threaded slim HTTP server
+# slimDhcpRelayServer
+C++11 based multi threaded slim DHCP relay (proxy) server
 
 # Initial development environment requierments
 - `sudo atp-get install git cmake build-essential libapr1-dev gzip zip net-tools`
@@ -22,7 +22,7 @@ C++ based multi threaded slim HTTP server
 - `cd build`
 - `build$ cmake ../` for production code, OR
 - `build$ cmake ../ -DBUILD_UNIT_TESTS=True` (for debug/unit test/ non production mode)
-- `build$ make` (it will build according to the Makefile that is present there - main artifcat is `myHttpServer.out`)
+- `build$ make` (it will build according to the Makefile that is present there - main artifcat is `slimDhcpRelayServer.out`)
 
 # Run unit tests:
 - After sucessfully building the project, the unit tests (GTest based) will be built as well.
@@ -33,8 +33,8 @@ C++ based multi threaded slim HTTP server
 
 # Run playground function (for exploring/testing purposes):
 - The project needs to be sucessfully built with the `-DBUILD_UNIT_TESTS=True`  (same as for building unit tests).
-- Run the following (from the `build` folder): `./src/myHttpServer.out <full_path_to_logger_configuration_file> -p <name_of_function_to_run`, for example: 
-- `./src/myHttpServer.out ../appLogging.properties -p setThreadCpuAffinityExample` (to run the `setThreadCpuAffinityExample` playground function).
+- Run the following (from the `build` folder): `./src/slimDhcpRelayServer.out <full_path_to_logger_configuration_file> -p <name_of_function_to_run`, for example: 
+- `./src/slimDhcpRelayServer.out ../appLogging.properties -p setThreadCpuAffinityExample` (to run the `setThreadCpuAffinityExample` playground function).
 
 # Generating unit test covrage: 
 - Run the unit tests (as described above)
@@ -44,7 +44,7 @@ C++ based multi threaded slim HTTP server
 
 # Application covarage:
 - Build the application (according to the build instructions mentioned above)
-- Run the application: `cd myHttpServer/build/ && .src/myHttpServer <full_path_to_logger_configuration_file>` 
-- Go to the `myHttpServer/build/src/CMakeFiles/myHttpServer.out.dir` there you will find the `main.cpp.gcda` and `main.cpp.gcno` files
+- Run the application: `cd slimDhcpRelayServer/build/ && .src/myHttpServer <full_path_to_logger_configuration_file>` 
+- Go to the `slimDhcpRelayServer/build/src/CMakeFiles/slimDhcpRelayServer.out.dir` there you will find the `main.cpp.gcda` and `main.cpp.gcno` files
 - From the above folder run: `lcov –c –d . –o mainAppCovrage.info`
 - Then generate the HTML report: `genhtml mainAppCovrage.info` (the artifact will be located at the same folder named `index.html`)

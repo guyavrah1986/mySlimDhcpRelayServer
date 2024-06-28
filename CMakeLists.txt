@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 
 # Add/customize global project settings:
-project(myHttpServer)
+project(slimDhcpRelayServer)
 set(CMAKE_CXX_STANDARD 20)
 
 message(STATUS "main CMakeLists.txt of ${CMAKE_PROJECT_NAME}")
