@@ -2,7 +2,7 @@
 # ==================================================
 set(libName "communicationLib")
 
-add_library(${libName} SHARED socketBase.cpp datagramSocket.cpp)
+add_library(${libName} SHARED socketBase.cpp datagramSocket.cpp recivedPaylodBase.cpp)
 
 target_compile_options(${libName} PUBLIC -g -O0 -Wall -fprofile-arcs -ftest-coverage)
 target_link_options(${libName} PUBLIC -fprofile-arcs -ftest-coverage)

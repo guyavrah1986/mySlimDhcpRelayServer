@@ -8,9 +8,8 @@
 
 using namespace std;
 
-SocketBase::SocketBase(int protocol, unsigned int port, const string& ipAddressToBind)
-    : m_protocol(protocol)
-    , m_socketDescriptor(-1)
+SocketBase::SocketBase(unsigned int port, const string& ipAddressToBind)
+    : m_socketDescriptor(-1)
     , m_port(port)
     , m_interfaceId(inet_addr(m_ipAddrToBind.c_str()))
     , m_ipAddrToBind(ipAddressToBind)
@@ -40,7 +39,7 @@ SocketBase::~SocketBase()
 bool SocketBase::CreateSocket()
 {
     auto rootLogger = log4cxx::Logger::getRootLogger();
-    m_socketDescriptor = socket(AF_INET, this->GetSocketType(), 0);
+    m_socketDescriptor = socket(this->GetSocketDomain(), this->GetSocketType(), 0);
     LOG4CXX_DEBUG(rootLogger, "socket descriptor is:" << m_socketDescriptor);
     if (0 > m_socketDescriptor)
     {
@@ -55,7 +54,7 @@ bool SocketBase::BindSocket()
     // TODO: Validate the IP address!
     auto rootLogger = log4cxx::Logger::getRootLogger();
     struct sockaddr_in serveraddr = {};
-    serveraddr.sin_family = AF_INET;
+    serveraddr.sin_family = this->GetSocketDomain();
     serveraddr.sin_port = htons(m_port);
     serveraddr.sin_addr.s_addr = inet_addr(m_ipAddrToBind.c_str());
     if (bind(m_socketDescriptor, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
@@ -73,4 +72,11 @@ bool SocketBase::BindSocket()
 int SocketBase::GetSocketDescriptor() const
 {
     return this->m_socketDescriptor;
+}
+
+int SocketBase::GetSocketDomain() const
+{
+    // Currently, hard-coded IPv4, which is fine cause
+    // DHCP is NOT for IPv6 
+    return AF_INET;
 }

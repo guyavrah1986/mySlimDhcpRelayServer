@@ -10,10 +10,9 @@ TEST(datagrameSocketTest, createSingleDatagramSocketObject)
 	auto rootLogger = log4cxx::Logger::getRootLogger();
 	HeapLeakChecker heap_checker("createSingleDatagramSocketObject");
     {
-		int protocol = 1;
 		unsigned int port = 5001;
 		std::string ipAddrToBind = "127.0.0.1";
-		DatagramSocket testSocket(protocol, port, ipAddrToBind);
+		DatagramSocket testSocket(port, ipAddrToBind);
 		EXPECT_EQ(SOCK_DGRAM, testSocket.GetSocketType());
 		LOG4CXX_INFO(rootLogger,"created DatagramSocket on the stack");
 
@@ -33,10 +32,9 @@ TEST(datagrameSocketTest, createSocketOnDatagramSocketObjectAndThenCloseIt)
 	int socketDescriptor;
 	HeapLeakChecker heap_checker("createSocketOnDatagramSocketObjectAndThenCloseIt");
     {
-		int protocol = 1;
 		unsigned int port = 5000;
 		std::string ipAddrToBind = "127.0.0.1";
-		DatagramSocket testSocket(protocol, port, ipAddrToBind);
+		DatagramSocket testSocket(port, ipAddrToBind);
 		EXPECT_EQ(SOCK_DGRAM, testSocket.GetSocketType());
 
 		// Create the socket:
@@ -66,10 +64,9 @@ TEST(datagrameSocketTest, createSocketThenBindItAndFinallyCloseIt)
 	int socketDescriptor;
 	HeapLeakChecker heap_checker("createSocketThenBindItAndFinallyCloseIt");
     {
-		int protocol = 1;
 		unsigned int port = 5000;
 		std::string ipAddrToBind = "127.0.0.1";
-		DatagramSocket testSocket(protocol, port, ipAddrToBind);
+		DatagramSocket testSocket(port, ipAddrToBind);
 		EXPECT_EQ(SOCK_DGRAM, testSocket.GetSocketType());
 
 		// Create the socket:

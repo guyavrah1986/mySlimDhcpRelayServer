@@ -228,10 +228,9 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
     string portNum(argv[4]);
     string ipAddr(argv[5]);
     LOG4CXX_INFO(rootLogger, "port, IP address are:" << portNum << "," << ipAddr);
-    int protocol = 1;
     unsigned long ul = stoul(portNum);
     unsigned int port = static_cast<unsigned int>(ul); 
-    DatagramSocket datagramSocket(protocol, port, ipAddr);
+    DatagramSocket datagramSocket(port, ipAddr);
 
     // Create the actual underlying socket
     bool ret = datagramSocket.CreateSocket();
