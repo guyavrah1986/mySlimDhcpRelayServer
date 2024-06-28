@@ -178,7 +178,7 @@ int simplePosixDatagramSocketExampleFunc(int argc, char** argv)
     string portNum(argv[4]);
     LOG4CXX_INFO(rootLogger, "the port number to open is:" << portNum);
     int fd;
-    if ( (fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) 
+    if ( (fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0 ) 
     {
         LOG4CXX_ERROR(rootLogger, "failed to create socket, aborting");
         return 1;
@@ -193,15 +193,17 @@ int simplePosixDatagramSocketExampleFunc(int argc, char** argv)
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
     if (bind(fd, (struct sockaddr *)&serveraddr, sizeof(serveraddr)) < 0 )
     {
-        perror( "bind failed" );
+        perror("bind failed");
         LOG4CXX_ERROR(rootLogger, "bind to UDP port number:" << portNum << " failed, aborting");
         return 1;
     }
 
     const size_t maxSizeBuf = 1500;
     char buffer[maxSizeBuf];
+    struct sockaddr_storage their_addr; // connector's address information
+    socklen_t sendsize = sizeof(their_addr);
     LOG4CXX_INFO(rootLogger, "about to wait on recvfrom");
-    int length = recvfrom( fd, buffer, sizeof(buffer) - 1, 0, NULL, 0);
+    int length = recvfrom(fd, buffer, sizeof(buffer) - 1, 0, (struct sockaddr*)&their_addr, &sendsize);
     if ( length < 0 )
     {
         LOG4CXX_ERROR(rootLogger, "recvfrom failed");
@@ -211,6 +213,18 @@ int simplePosixDatagramSocketExampleFunc(int argc, char** argv)
     buffer[length] = '\0';
     string incomingMsg(buffer);
     LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
+
+    /*
+    char s[INET6_ADDRSTRLEN];
+    inet_ntop(their_addr.ss_family,
+            get_in_addr((struct sockaddr *)&their_addr),
+            s, sizeof s);  
+    LOG4CXX_INFO(rootLogger, "about to send a reply to the sender:" << s);
+    */
+    char response [] = "reply from server!";
+    unsigned int flags = 0;
+    length = sendto(fd, (const void*)response, sizeof(response), flags, (const struct sockaddr*)&their_addr, sendsize);
+    LOG4CXX_INFO(rootLogger, "reply sent (" << length << " bytes)");
     LOG4CXX_INFO(rootLogger, "end");
     return 0;
 }
@@ -249,19 +263,29 @@ int simpleDatagramSocketExampleFunc(int argc, char** argv)
 
     const size_t maxSizeBuf = 1500;
     char buffer[maxSizeBuf];
-    int fd = datagramSocket.GetSocketDescriptor();
     RecivedPaylodBase recvBuff(static_cast<void*>(buffer), maxSizeBuf, 0);
-    LOG4CXX_INFO(rootLogger, "using buffer of:" << maxSizeBuf << " to recive data from FD:" << fd);
     bool recvivedCorrectly = datagramSocket.ReciveData(recvBuff);
     if (false == recvivedCorrectly)
     {
-        LOG4CXX_ERROR(rootLogger, "recvfrom on socket descriptor:" << fd << " failed, aborting");
+        LOG4CXX_ERROR(rootLogger, "was unable to recvive on socket, aborting");
         return -1;
     }
-    
+
     static_cast<char*>(recvBuff.m_buff)[recvBuff.m_numBytesRead] = '\0';
     string incomingMsg(buffer);
     LOG4CXX_INFO(rootLogger, "got message:" << incomingMsg);
+    sleep(1);
+    // Now respond to the client with some message:
+    const char sendBuff [] = "Hi from server!";
+    size_t buffLen = sizeof(sendBuff);
+    int flags = 0;
+    bool sentCorrectly = datagramSocket.SendData(sendBuff, buffLen, flags);
+    if (false == sentCorrectly)
+    {
+        LOG4CXX_ERROR(rootLogger, "was unable to send data on socket, aborting");
+        return -1;
+    }
+
     LOG4CXX_INFO(rootLogger, "end");
     return 0;
 }

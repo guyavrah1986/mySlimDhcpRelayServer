@@ -17,7 +17,7 @@ public:
     // ==================
     virtual int GetSocketType() const = 0;
     virtual bool ReciveData(RecivedPaylodBase& payload) = 0;
-    //virtual bool SendData(const void *msg, int len, unsigned int flags) = 0;
+    virtual bool SendData(const void* msg, int len, unsigned int flags) = 0;
 
     // Common capabilities:
     // ====================
@@ -32,8 +32,9 @@ public:
 protected:
     int m_socketDescriptor;
     unsigned int m_port;
+    int          m_protocol;
 
     // TODO: make sure if needed
-    uint32_t m_interfaceId;
+    //uint32_t m_interfaceId;
     std::string m_ipAddrToBind;
 };

@@ -1,3 +1,5 @@
+#include <log4cxx/logger.h>
+
 #include "include/recivedPaylodBase.h"
 
 using namespace std;
@@ -17,8 +19,10 @@ RecivedPaylodBase::~RecivedPaylodBase()
 }
 
 DgramOrigAddressIpv4::DgramOrigAddressIpv4()
+    : m_origSenderAddrlen(sizeof(m_origSenderAddr))
 {
-    
+    auto rootLogger = log4cxx::Logger::getRootLogger();
+    LOG4CXX_DEBUG(rootLogger, "m_origSenderAddrlen was set to:" << m_origSenderAddrlen);
 }
 
 DgramOrigAddressIpv4::~DgramOrigAddressIpv4()

@@ -41,6 +41,6 @@ public:
     DgramOrigAddressIpv4(const DgramOrigAddressIpv4& other) = delete;
     DgramOrigAddressIpv4& operator=(const DgramOrigAddressIpv4& rhs) = delete;
 
-    struct sockaddr_in m_origSenderAddr;
+    struct sockaddr_storage m_origSenderAddr;
     int                m_origSenderAddrlen;
 };

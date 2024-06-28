@@ -31,11 +31,14 @@ public:
     // ==================
     virtual int GetSocketType() const override;
     virtual bool ReciveData(RecivedPaylodBase& payload) override;
-    //virtual bool SendData() override;
+    virtual bool SendData(const void* msg, int len, unsigned int flags) override;
 
     // Getters & setters:
     // ==================
+    void SetSocketProtocol();
 
+private:
+    void* getSenderAddress(const struct sockaddr *sa);
 
 protected:
     /* Address of the host that the last message on this
