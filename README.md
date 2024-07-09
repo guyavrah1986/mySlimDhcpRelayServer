@@ -2,9 +2,9 @@
 C++11 based multi threaded slim DHCP relay (proxy) server
 
 # Initial development environment requierments
-- `sudo atp-get install git cmake build-essential libapr1-dev gzip zip net-tools`
 - Currently the development environment is Ubuntu22.04 (most of the above are probably already present).
-- install GTEST: 
+- `sudo atp-get install git cmake build-essential libapr1-dev gzip zip net-tools`
+- install GTest: 
 - `sudo apt-get install libgtest-dev`
 - `cd /usr/src/gtest`
 - `sudo cmake CMakeLists.txt && sudo make && sudo cp lib/*.a /usr/lib`
@@ -17,7 +17,7 @@ C++11 based multi threaded slim DHCP relay (proxy) server
 - NOTE: For production environment, the following is needed: `liblog4cxx`, `libapr1` and `libaprutil`.
 
 # Build instructions:
-- `cd myHttpServer` (root folder of the project)
+- `cd myslimDhcpRelayServer` (root folder of the project)
 - Create the "out of source" `build` folder: `mkdir build`
 - `cd build`
 - `build$ cmake ../` for production code, OR
