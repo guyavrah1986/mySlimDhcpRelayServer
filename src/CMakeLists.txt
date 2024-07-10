@@ -1,13 +1,13 @@
 # CMakeLists.txt file for the main application (executable)
 # =========================================================
-set(exeName "myHttpServer.out")
+set(exeName "mySlimDhcpRelayServer.out")
 include(../globalDefines.cmake)
 message(STATUS "CMakeLists.txt of ${exeName} executable")
 
 # Add the executable which is of now, composed ONLY from the main.cpp
 add_executable(${exeName} main.cpp)
 
-target_link_libraries(${exeName} PUBLIC infraLib communicationLib)
+target_link_libraries(${exeName} PUBLIC infraLib communicationLib managedObjectsLib)
 target_link_libraries(${exeName} PRIVATE log4cxx)
 
 # For test covrage and debug runs in general
@@ -29,4 +29,5 @@ target_include_directories(${exeName} PUBLIC
                           "${PROJECT_BINARY_DIR}"
                           "${PROJECT_SOURCE_DIR}/src/infra/include"
                           "${PROJECT_SOURCE_DIR}/src/communication/include"
+                          "${PROJECT_SOURCE_DIR}/src/managedObjects/include"
                           )

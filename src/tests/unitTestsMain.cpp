@@ -7,6 +7,7 @@
 #include "cpp11ThreadWrapperTest.h"
 #include "testSocket.h"
 #include "threadPoolTest.h"
+#include "vrfTest.h"
 
 using namespace std;
 

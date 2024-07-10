@@ -26,6 +26,8 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src/infra)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/communication)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/managedObjects)
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/tests)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/playground)

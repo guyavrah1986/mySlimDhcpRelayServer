@@ -3,10 +3,11 @@ from scapy.all import *
 
 def send_udp_datagram_2(src_port: int, dst_port: int) -> None:
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Use SOCK_DGRAM for standard UDP socket
-    ip_addr_to_bind = "192.168.79.129" #
+    ip_addr_to_bind = "192.168.79.129"
+    server_ip_addr = "192.168.1.2"
     sock.bind((ip_addr_to_bind, src_port))  # Bind to the source port
     message = b'hello'
-    sock.sendto(message, ("127.0.0.1", dst_port))  # Send the UDP packet
+    sock.sendto(message, (server_ip_addr, dst_port))  # Send the UDP packet
     data, address = sock.recvfrom(4096)
     print("recived message from server:" + str(data))
 
