@@ -1,14 +1,22 @@
 # slimDhcpRelayServer
-C++11 based multi threaded slim DHCP relay (proxy) server
+C++20 based multi threaded slim DHCP relay (proxy) server
+
+# Environment characteristics:
+- Development machine: `Ubuntu 22.04`
+- Compiler: `gcc/g++14`
+- Build tool: `CMake 3.28`
+- Source control: `git`
+- Main language: `C++ 20`
+- Architecture: `X86_64`
+- Unit test framework: `GTest`
 
 # Build development environment Docker image:
 - OPTIONAL (if needed): Edit the `Dockerfile` in the root folder of the project as you wish 
 - From the folder where the Dockerfile reside, run:`docker build -t <image_name>:<versiob> .` for example: `docker build -t dev_env_image:0.1 .`
 - You can run `docker images` to see all avialble images on this machine.
-- To run the dev_env image run (for example):`docker run -i dev_env_image:0.2` 
+- To run the dev_env_image Docker image run (for example):`docker run -i dev_env_image:0.2` 
 
-# Initial development environment requierments
-- Currently the development environment is Ubuntu22.04 (most of the above are probably already present).
+# Initial development environment requierments:
 - `sudo atp-get install git cmake build-essential libapr1-dev gzip zip net-tools`
 - install GTest: 
 - `sudo apt-get install libgtest-dev`
