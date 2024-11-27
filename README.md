@@ -12,13 +12,13 @@ C++20 based multi threaded slim DHCP relay (proxy) server
 
 # Build development environment Docker image:
 - OPTIONAL (if needed): Edit the `Dockerfile` in the root folder of the project as you wish 
-- From the folder where the Dockerfile reside, run:`docker build -t <image_name>:<versiob> .` for example: `docker build -t dev_env_image:0.1 .`
+- From the folder where the Dockerfile reside, run:`docker build -t <image_name>:<version> .` for example: `docker build -t dev_env_image:0.1 .`
 - You can run `docker images` to see all avialble images on this machine.
 - To run the dev_env_image Docker image run (for example):`docker run -i dev_env_image:0.2` 
 
 # Initial development environment requierments:
 - `sudo atp-get install git cmake build-essential libapr1-dev gzip zip net-tools`
-- install GTest: 
+- Install GTest:
 - `sudo apt-get install libgtest-dev`
 - `cd /usr/src/gtest`
 - `sudo cmake CMakeLists.txt && sudo make && sudo cp lib/*.a /usr/lib`
