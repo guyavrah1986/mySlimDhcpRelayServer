@@ -32,9 +32,9 @@ RUN cmake --version
 RUN cd /usr/src/gtest && cmake CMakeLists.txt && make && cp lib/*.a /usr/lib
 
 # Copy the project sources into the container image
-RUN mkdir $HOME/project
-COPY . $HOME/project/
-RUN ls -l $HOME/project/
+RUN mkdir /project
+COPY . /project/
+RUN ls -l /project/
 
 # TODO: build the project
 # cd .. && rm -rf build && mkdir build && cd build && cmake ../ -DBUILD_UNIT_TESTS=True  && make

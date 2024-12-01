@@ -1,6 +1,6 @@
 # This is the project's main CMakeLists.txt
 #========================================== 
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.16.3)
 
 # Add/customize global project settings:
 project(slimDhcpRelayServer)
@@ -20,6 +20,8 @@ add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 include_directories(src)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/infra)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/communication)
 

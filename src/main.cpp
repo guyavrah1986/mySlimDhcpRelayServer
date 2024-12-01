@@ -8,7 +8,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	cout << "main - started" << endl;
+	cout << "main - started, got:" << argc << " command line arguments" << endl;
 
 	// The first paramter is the path to the logger configuration file
 	const string appLoggingConfigurationFileName = string(argv[1]);

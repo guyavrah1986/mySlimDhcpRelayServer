@@ -3,6 +3,10 @@
 #include <map>
 #include <string>
 
+#define IN
+#define OUT
+#define INOUT
+
 enum ErrorCode
 {
 	UTILS_ERROR_CODE_SUCCESS = 0,
